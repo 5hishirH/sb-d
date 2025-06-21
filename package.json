@@ -4,7 +4,7 @@
   "description": "Express + TypeScript + Zod + Mongoose starter template",
   "main": "dist/index.js",
   "scripts": {
-    "build": "npm install",
+    "build": "npm install --production",
     "start": "node dist/index.js"
   },
   "keywords": [
