@@ -40,6 +40,7 @@ exports.User = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const crypto_1 = __importDefault(require("crypto"));
 const userSchema = new mongoose_1.Schema({
     name: {
         type: String,
@@ -62,18 +63,26 @@ const userSchema = new mongoose_1.Schema({
         minlength: [6, "Password must be at least 6 characters"],
         select: false,
     },
-    role: {
+    accountRole: {
         type: String,
         enum: ["user", "admin"],
         default: "user",
+    },
+    status: {
+        type: String,
     },
     isActive: {
         type: Boolean,
         default: true,
     },
-    refreshToken: {
-        type: String,
+    isVerified: {
+        type: Boolean,
+        default: false,
     },
+    emailVerificationToken: { type: String },
+    emailVerificationTokenExpires: { type: Date },
+    passwordResetToken: { type: String },
+    passwordResetTokenExpires: { type: Date },
 }, {
     timestamps: true,
     toJSON: {
@@ -115,6 +124,24 @@ userSchema.methods.generateRefreshToken = async function () {
     this.refreshToken = refreshToken;
     await this.save();
     return refreshToken;
+};
+userSchema.methods.generateEmailVerificationToken = function () {
+    const verificationToken = crypto_1.default.randomBytes(32).toString("hex");
+    this.emailVerificationToken = crypto_1.default
+        .createHash("sha256")
+        .update(verificationToken)
+        .digest("hex");
+    this.emailVerificationTokenExpires = Date.now() + 10 * 60 * 1000;
+    return verificationToken;
+};
+userSchema.methods.generatePasswordResetToken = function () {
+    const resetToken = crypto_1.default.randomBytes(32).toString("hex");
+    this.passwordResetToken = crypto_1.default
+        .createHash("sha256")
+        .update(resetToken)
+        .digest("hex");
+    this.passwordResetTokenExpires = Date.now() + 10 * 60 * 1000;
+    return resetToken;
 };
 exports.User = mongoose_1.default.model("User", userSchema);
 //# sourceMappingURL=user.model.js.map

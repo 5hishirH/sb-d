@@ -6,6 +6,6 @@ declare global {
         }
     }
 }
-export declare const authenticate: import("express").RequestHandler<import("express-serve-static-core").ParamsDictionary, any, any, import("qs").ParsedQs, Record<string, any>>;
-export declare const authorize: (...roles: string[]) => import("express").RequestHandler<import("express-serve-static-core").ParamsDictionary, any, any, import("qs").ParsedQs, Record<string, any>>;
+export declare const authenticate: import("express").RequestHandler<unknown, {}, unknown, unknown, Record<string, any>>;
+export declare const authorize: (...roles: string[]) => import("express").RequestHandler<unknown, {}, unknown, unknown, Record<string, any>>;
 //# sourceMappingURL=auth.d.ts.map

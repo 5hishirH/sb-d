@@ -19,7 +19,7 @@ router
     .route("/:courseId")
     .get((0, validate_1.validate)(course_zod_1.getCourseSchema), course_controller_1.getCourseWithContent)
     .put((0, validate_1.validate)(course_zod_1.updateCourseSchema), course_controller_1.updateCourseById)
-    .delete((0, validate_1.validate)(course_zod_1.deleteCourseSchema), course_controller_1.deleteCourseAndContents);
+    .delete((0, validate_1.validate)(course_zod_1.getCourseSchema), course_controller_1.deleteCourseAndContents);
 router
     .route("/:courseId/activate")
     .patch((0, validate_1.validate)(course_zod_1.getCourseSchema), course_controller_1.activateCourse);

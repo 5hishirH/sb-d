@@ -3,11 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteInstructorById = exports.updateInstructorById = exports.getInstructorById = exports.getAllInstructors = exports.createInstructor = void 0;
+exports.deleteInstructorById = exports.updateInstructorById = exports.getInstructorById = exports.getAllInstructors = exports.createManyInstructor = exports.createInstructor = void 0;
 const asyncHandler_1 = require("../utils/asyncHandler");
 const AppError_1 = require("../utils/AppError");
 const instructor_model_1 = __importDefault(require("../models/instructor.model"));
 const course_model_1 = __importDefault(require("../models/course.model"));
+const mongoose_1 = __importDefault(require("mongoose"));
 exports.createInstructor = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
     const newInstructor = await instructor_model_1.default.create(req.body);
     res.status(201).json({
@@ -15,6 +16,31 @@ exports.createInstructor = (0, asyncHandler_1.asyncHandler)(async (req, res) => 
         message: "Instructor created successfully",
         data: newInstructor,
     });
+});
+exports.createManyInstructor = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
+    const instructorsToCreate = req.body;
+    const session = await mongoose_1.default.startSession();
+    session.startTransaction();
+    try {
+        const newInstructors = await instructor_model_1.default.create(instructorsToCreate, {
+            session,
+            ordered: true,
+        });
+        await session.commitTransaction();
+        res.status(201).json({
+            success: true,
+            message: `${newInstructors.length} instructors created successfully.`,
+            count: newInstructors.length,
+            data: newInstructors,
+        });
+    }
+    catch (error) {
+        await session.abortTransaction();
+        throw error;
+    }
+    finally {
+        session.endSession();
+    }
 });
 exports.getAllInstructors = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
     const instructors = await instructor_model_1.default.find();
@@ -54,7 +80,7 @@ exports.deleteInstructorById = (0, asyncHandler_1.asyncHandler)(async (req, res)
     const { instructorId } = req.params;
     const associatedCourse = await course_model_1.default.findOne({ instructor: instructorId });
     if (associatedCourse) {
-        throw AppError_1.AppError.badRequest("Cannot delete instructor. They are still associated with one or more courses.");
+        throw AppError_1.AppError.badRequest("Cannot delete instructor. The instructor is still associated with one or more courses.");
     }
     const instructor = await instructor_model_1.default.findByIdAndDelete(instructorId);
     if (!instructor) {

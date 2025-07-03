@@ -13,6 +13,40 @@ const courseVideo_model_1 = __importDefault(require("../models/courseVideo.model
 const material_model_1 = __importDefault(require("../models/material.model"));
 const assignment_model_1 = __importDefault(require("../models/assignment.model"));
 const quiz_model_1 = __importDefault(require("../models/quiz.model"));
+const createCourseContents = async ({ modules, courseId, session, }) => {
+    if (!modules || modules.length === 0) {
+        return;
+    }
+    for (const moduleData of modules) {
+        const { videos, materials, quizzes, assignments, ...moduleCoreData } = moduleData;
+        const [module] = await courseModule_model_1.default.create([{ ...moduleCoreData, course: courseId }], { session });
+        if (!module) {
+            throw AppError_1.AppError.internal("Module could not be created within the transaction.");
+        }
+        const moduleId = module._id;
+        const contentCreationPromises = [];
+        if (videos && videos.length > 0) {
+            const videoDocs = videos.map((v) => ({ ...v, module: moduleId }));
+            contentCreationPromises.push(courseVideo_model_1.default.create(videoDocs, { session, ordered: true }));
+        }
+        if (materials && materials.length > 0) {
+            const materialDocs = materials.map((m) => ({ ...m, module: moduleId }));
+            contentCreationPromises.push(material_model_1.default.create(materialDocs, { session, ordered: true }));
+        }
+        if (quizzes && quizzes.length > 0) {
+            const quizDocs = quizzes.map((q) => ({ ...q, module: moduleId }));
+            contentCreationPromises.push(quiz_model_1.default.create(quizDocs, { session, ordered: true }));
+        }
+        if (assignments && assignments.length > 0) {
+            const assignmentDocs = assignments.map((a) => ({
+                ...a,
+                module: moduleId,
+            }));
+            contentCreationPromises.push(assignment_model_1.default.create(assignmentDocs, { session, ordered: true }));
+        }
+        await Promise.all(contentCreationPromises);
+    }
+};
 exports.createCourseWithContent = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
     const { modules, ...courseData } = req.body;
     const session = await mongoose_1.default.startSession();
@@ -22,57 +56,11 @@ exports.createCourseWithContent = (0, asyncHandler_1.asyncHandler)(async (req, r
         if (!course) {
             throw AppError_1.AppError.internal("Course document could not be created.");
         }
-        if (modules && modules.length > 0) {
-            for (const moduleData of modules) {
-                const { videos, materials, quizzes, assignments, ...moduleCoreData } = moduleData;
-                const [module] = await courseModule_model_1.default.create([{ ...moduleCoreData, course: course._id }], { session });
-                if (!module) {
-                    throw AppError_1.AppError.internal("Module could not be created within the transaction.");
-                }
-                const moduleId = module._id;
-                await Promise.all([
-                    (async () => {
-                        if (videos && videos.length > 0) {
-                            const videoDocs = videos.map((video) => ({
-                                ...video,
-                                module: moduleId,
-                            }));
-                            await courseVideo_model_1.default.create(videoDocs, { session, ordered: true });
-                        }
-                    })(),
-                    (async () => {
-                        if (materials && materials.length > 0) {
-                            const materialDocs = materials.map((material) => ({
-                                ...material,
-                                module: moduleId,
-                            }));
-                            await material_model_1.default.create(materialDocs, { session, ordered: true });
-                        }
-                    })(),
-                    (async () => {
-                        if (quizzes && quizzes.length > 0) {
-                            const quizDocs = quizzes.map((quiz) => ({
-                                ...quiz,
-                                module: moduleId,
-                            }));
-                            await quiz_model_1.default.create(quizDocs, { session, ordered: true });
-                        }
-                    })(),
-                    (async () => {
-                        if (assignments && assignments.length > 0) {
-                            const assignmentDocs = assignments.map((assignment) => ({
-                                ...assignment,
-                                module: moduleId,
-                            }));
-                            await assignment_model_1.default.create(assignmentDocs, {
-                                session,
-                                ordered: true,
-                            });
-                        }
-                    })(),
-                ]);
-            }
-        }
+        await createCourseContents({
+            modules,
+            courseId: course._id,
+            session,
+        });
         await session.commitTransaction();
         res.status(201).json({
             success: true,
@@ -98,38 +86,13 @@ exports.createManyCoursesWithContent = (0, asyncHandler_1.asyncHandler)(async (r
             const { modules, ...topLevelCourseData } = courseData;
             const [course] = await course_model_1.default.create([topLevelCourseData], { session });
             if (!course) {
-                throw AppError_1.AppError.internal("Course document could not be created.");
+                throw AppError_1.AppError.internal("A course document could not be created.");
             }
-            if (modules && modules.length > 0) {
-                for (const moduleData of modules) {
-                    const { videos, materials, quizzes, assignments, ...moduleCoreData } = moduleData;
-                    const [module] = await courseModule_model_1.default.create([{ ...moduleCoreData, course: course._id }], { session });
-                    if (!module) {
-                        throw AppError_1.AppError.internal("Module could not be created within the transaction.");
-                    }
-                    const moduleId = module._id;
-                    await Promise.all([
-                        (async () => {
-                            if (videos && videos.length > 0) {
-                                const videoDocs = videos.map((v) => ({
-                                    ...v,
-                                    module: moduleId,
-                                }));
-                                await courseVideo_model_1.default.create(videoDocs, { session, ordered: true });
-                            }
-                        })(),
-                        (async () => {
-                            if (materials && materials.length > 0) {
-                                const materialDocs = materials.map((m) => ({
-                                    ...m,
-                                    module: moduleId,
-                                }));
-                                await material_model_1.default.create(materialDocs, { session, ordered: true });
-                            }
-                        })(),
-                    ]);
-                }
-            }
+            await createCourseContents({
+                modules,
+                courseId: course._id,
+                session,
+            });
             createdCourses.push(course);
         }
         await session.commitTransaction();
@@ -148,35 +111,83 @@ exports.createManyCoursesWithContent = (0, asyncHandler_1.asyncHandler)(async (r
     }
 });
 exports.getAllCourses = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
+    const { category, instructor, search, sortBy, page, limit } = req.query;
     const filter = {};
-    if (req.query.category) {
-        filter.category = req.query.category;
+    if (category)
+        filter.category = category;
+    if (instructor)
+        filter.instructor = instructor;
+    if (search) {
+        filter.$text = { $search: search };
     }
-    if (req.query.instructor) {
-        filter.instructor = req.query.instructor;
+    const sortOptions = {
+        createdAt: "desc",
+    };
+    if (sortBy) {
+        const [field, order] = sortBy.split(":");
+        if (field && (order === "asc" || order === "desc")) {
+            sortOptions[field] = order;
+        }
     }
-    const courses = await course_model_1.default.find(filter)
-        .populate("instructor", "name")
-        .populate("category", "name");
+    const pageNumber = parseInt(page, 10);
+    const limitNumber = parseInt(limit, 10);
+    const skip = (pageNumber - 1) * limitNumber;
+    const [courses, totalCourses] = await Promise.all([
+        course_model_1.default.find(filter)
+            .populate({ path: "instructor", select: "name" })
+            .populate({ path: "category", select: "name" })
+            .sort(sortOptions)
+            .skip(skip)
+            .limit(limitNumber)
+            .lean(),
+        course_model_1.default.countDocuments(filter),
+    ]);
     res.status(200).json({
         success: true,
         count: courses.length,
+        pagination: {
+            total: totalCourses,
+            totalPages: Math.ceil(totalCourses / limitNumber),
+            currentPage: pageNumber,
+        },
         data: courses,
     });
 });
 exports.getCourseWithContent = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
     const { courseId } = req.params;
-    const course = await course_model_1.default.findById(courseId)
-        .populate({ path: "instructor", select: "name avatarUrl" })
-        .populate({ path: "category", select: "name iconUrl" })
-        .lean();
-    if (!course) {
-        throw AppError_1.AppError.notFound("Course not found");
+    const { content } = req.query;
+    const courseExists = await course_model_1.default.findById(courseId).lean();
+    if (!courseExists) {
+        throw AppError_1.AppError.notFound(`Course not found with id of ${courseId}`);
     }
+    const moduleIds = await courseModule_model_1.default.find({ course: courseId }).distinct("_id");
+    if (content) {
+        let data = [];
+        const filter = { module: { $in: moduleIds } };
+        switch (content) {
+            case "videos":
+                data = await courseVideo_model_1.default.find(filter).sort({ order: "asc" });
+                break;
+            case "materials":
+                data = await material_model_1.default.find(filter).sort({ order: "asc" });
+                break;
+            case "quizzes":
+                data = await quiz_model_1.default.find(filter).sort({ order: "asc" });
+                break;
+            case "assignments":
+                data = await assignment_model_1.default.find(filter).sort({ order: "asc" });
+                break;
+        }
+        return res.status(200).json({
+            success: true,
+            count: data.length,
+            data: data,
+        });
+    }
+    const course = courseExists;
     const modules = await courseModule_model_1.default.find({ course: courseId })
         .sort({ order: "asc" })
         .lean();
-    const moduleIds = modules.map((m) => m._id);
     const [videos, materials, quizzes, assignments] = await Promise.all([
         courseVideo_model_1.default.find({ module: { $in: moduleIds } })
             .sort({ order: "asc" })
@@ -185,7 +196,6 @@ exports.getCourseWithContent = (0, asyncHandler_1.asyncHandler)(async (req, res)
             .sort({ order: "asc" })
             .lean(),
         quiz_model_1.default.find({ module: { $in: moduleIds } })
-            .populate("questions")
             .sort({ order: "asc" })
             .lean(),
         assignment_model_1.default.find({ module: { $in: moduleIds } })
@@ -238,7 +248,7 @@ exports.getCourseWithContent = (0, asyncHandler_1.asyncHandler)(async (req, res)
         ...course,
         modules: populatedModules,
     };
-    res.status(200).json({
+    return res.status(200).json({
         success: true,
         data: finalResponse,
     });

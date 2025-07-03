@@ -1,4 +1,77 @@
 import { z } from "zod";
+export declare const createManyVideosSchema: z.ZodObject<{
+    body: z.ZodEffects<z.ZodArray<z.ZodObject<{
+        title: z.ZodOptional<z.ZodString>;
+        description: z.ZodOptional<z.ZodString>;
+        url: z.ZodString;
+        order: z.ZodNumber;
+        module: z.ZodString;
+    }, "strip", z.ZodTypeAny, {
+        order: number;
+        url: string;
+        module: string;
+        description?: string | undefined;
+        title?: string | undefined;
+    }, {
+        order: number;
+        url: string;
+        module: string;
+        description?: string | undefined;
+        title?: string | undefined;
+    }>, "atleastone">, [{
+        order: number;
+        url: string;
+        module: string;
+        description?: string | undefined;
+        title?: string | undefined;
+    }, ...{
+        order: number;
+        url: string;
+        module: string;
+        description?: string | undefined;
+        title?: string | undefined;
+    }[]], [{
+        order: number;
+        url: string;
+        module: string;
+        description?: string | undefined;
+        title?: string | undefined;
+    }, ...{
+        order: number;
+        url: string;
+        module: string;
+        description?: string | undefined;
+        title?: string | undefined;
+    }[]]>;
+}, "strip", z.ZodTypeAny, {
+    body: [{
+        order: number;
+        url: string;
+        module: string;
+        description?: string | undefined;
+        title?: string | undefined;
+    }, ...{
+        order: number;
+        url: string;
+        module: string;
+        description?: string | undefined;
+        title?: string | undefined;
+    }[]];
+}, {
+    body: [{
+        order: number;
+        url: string;
+        module: string;
+        description?: string | undefined;
+        title?: string | undefined;
+    }, ...{
+        order: number;
+        url: string;
+        module: string;
+        description?: string | undefined;
+        title?: string | undefined;
+    }[]];
+}>;
 export declare const updateCourseVideoSchema: z.ZodObject<{
     params: z.ZodObject<{
         videoId: z.ZodString;
@@ -71,4 +144,6 @@ export declare const deleteCourseVideoSchema: z.ZodObject<{
         videoId: string;
     };
 }>;
+export type GetVideoParams = z.infer<typeof updateCourseVideoSchema>["params"];
+export type UpdateVideoBody = z.infer<typeof updateCourseVideoSchema>["body"];
 //# sourceMappingURL=courseVideo.zod.d.ts.map

@@ -4,13 +4,21 @@ export interface IUser extends Document {
     name: string;
     email: string;
     password: string;
-    role: "user" | "admin";
+    accountRole: "user" | "admin";
+    status?: string;
     isActive: boolean;
+    isVerified: boolean;
     createdAt: Date;
     updatedAt: Date;
     refreshToken?: string;
+    emailVerificationToken?: string | undefined;
+    emailVerificationTokenExpires?: Date | undefined;
+    passwordResetToken?: string | undefined;
+    passwordResetTokenExpires?: Date | undefined;
     comparePassword(candidatePassword: string): Promise<boolean>;
     generateRefreshToken(): Promise<string>;
+    generateEmailVerificationToken(): string;
+    generatePasswordResetToken(): string;
 }
 export declare const User: mongoose.Model<IUser, {}, {}, {}, mongoose.Document<unknown, {}, IUser, {}> & IUser & Required<{
     _id: Schema.Types.ObjectId;

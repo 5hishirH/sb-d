@@ -9,7 +9,11 @@ const material_zod_1 = require("../zodSchemas/material.zod");
 const material_controller_1 = require("../controllers/material.controller");
 const router = express_1.default.Router();
 router
+    .route("/bulk")
+    .post((0, validate_1.validate)(material_zod_1.createManyMaterialsSchema), material_controller_1.createManyMaterials);
+router
     .route("/:materialId")
+    .get((0, validate_1.validate)(material_zod_1.deleteMaterialSchema), material_controller_1.getMaterialById)
     .put((0, validate_1.validate)(material_zod_1.updateMaterialSchema), material_controller_1.updateMaterialById)
     .delete((0, validate_1.validate)(material_zod_1.deleteMaterialSchema), material_controller_1.deleteMaterialById);
 exports.default = router;

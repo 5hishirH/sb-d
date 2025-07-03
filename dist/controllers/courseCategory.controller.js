@@ -3,11 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteCourseCategoryById = exports.updateCourseCategoryById = exports.getCourseCategoryById = exports.getAllCourseCategories = exports.createCourseCategory = void 0;
+exports.deleteCourseCategoryById = exports.updateCourseCategoryById = exports.getCourseCategoryById = exports.getAllCourseCategories = exports.createManyCategories = exports.createCourseCategory = void 0;
 const asyncHandler_1 = require("../utils/asyncHandler");
 const AppError_1 = require("../utils/AppError");
 const courseCategory_model_1 = __importDefault(require("../models/courseCategory.model"));
 const course_model_1 = __importDefault(require("../models/course.model"));
+const mongoose_1 = __importDefault(require("mongoose"));
 exports.createCourseCategory = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
     const newCategory = await courseCategory_model_1.default.create(req.body);
     res.status(201).json({
@@ -16,7 +17,32 @@ exports.createCourseCategory = (0, asyncHandler_1.asyncHandler)(async (req, res)
         data: newCategory,
     });
 });
-exports.getAllCourseCategories = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
+exports.createManyCategories = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
+    const categoriesToCreate = req.body;
+    const session = await mongoose_1.default.startSession();
+    session.startTransaction();
+    try {
+        const newCategories = await courseCategory_model_1.default.create(categoriesToCreate, {
+            session,
+            ordered: true,
+        });
+        await session.commitTransaction();
+        res.status(201).json({
+            success: true,
+            message: `${newCategories.length} course categories created successfully.`,
+            count: newCategories.length,
+            data: newCategories,
+        });
+    }
+    catch (error) {
+        await session.abortTransaction();
+        throw error;
+    }
+    finally {
+        session.endSession();
+    }
+});
+exports.getAllCourseCategories = (0, asyncHandler_1.asyncHandler)(async (_, res) => {
     const categories = await courseCategory_model_1.default.find();
     res.status(200).json({
         success: true,

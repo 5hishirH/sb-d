@@ -13,6 +13,9 @@ router
     .post((0, validate_1.validate)(instructor_zod_1.createInstructorSchema), instructor_controller_1.createInstructor)
     .get(instructor_controller_1.getAllInstructors);
 router
+    .route("/bulk")
+    .post((0, validate_1.validate)(instructor_zod_1.createManyInstructorSchema), instructor_controller_1.createManyInstructor);
+router
     .route("/:instructorId")
     .get((0, validate_1.validate)(instructor_zod_1.getInstructorSchema), instructor_controller_1.getInstructorById)
     .put((0, validate_1.validate)(instructor_zod_1.updateInstructorSchema), instructor_controller_1.updateInstructorById)

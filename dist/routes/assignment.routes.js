@@ -9,6 +9,9 @@ const assignment_zod_1 = require("../zodSchemas/assignment.zod");
 const assignment_controller_1 = require("../controllers/assignment.controller");
 const router = express_1.default.Router();
 router
+    .route("/bulk")
+    .post((0, validate_1.validate)(assignment_zod_1.createManyAssignmentsSchema), assignment_controller_1.createManyAssignments);
+router
     .route("/:assignmentId")
     .get((0, validate_1.validate)(assignment_zod_1.getAssignmentSchema), assignment_controller_1.getAssignmentById)
     .put((0, validate_1.validate)(assignment_zod_1.updateAssignmentSchema), assignment_controller_1.updateAssignmentById)

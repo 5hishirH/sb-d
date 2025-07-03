@@ -1,4 +1,77 @@
-import { z } from "zod";
+import z from "zod";
+export declare const createManyMaterialsSchema: z.ZodObject<{
+    body: z.ZodEffects<z.ZodArray<z.ZodObject<{
+        title: z.ZodString;
+        description: z.ZodOptional<z.ZodString>;
+        url: z.ZodString;
+        order: z.ZodNumber;
+        module: z.ZodString;
+    }, "strip", z.ZodTypeAny, {
+        order: number;
+        title: string;
+        url: string;
+        module: string;
+        description?: string | undefined;
+    }, {
+        order: number;
+        title: string;
+        url: string;
+        module: string;
+        description?: string | undefined;
+    }>, "atleastone">, [{
+        order: number;
+        title: string;
+        url: string;
+        module: string;
+        description?: string | undefined;
+    }, ...{
+        order: number;
+        title: string;
+        url: string;
+        module: string;
+        description?: string | undefined;
+    }[]], [{
+        order: number;
+        title: string;
+        url: string;
+        module: string;
+        description?: string | undefined;
+    }, ...{
+        order: number;
+        title: string;
+        url: string;
+        module: string;
+        description?: string | undefined;
+    }[]]>;
+}, "strip", z.ZodTypeAny, {
+    body: [{
+        order: number;
+        title: string;
+        url: string;
+        module: string;
+        description?: string | undefined;
+    }, ...{
+        order: number;
+        title: string;
+        url: string;
+        module: string;
+        description?: string | undefined;
+    }[]];
+}, {
+    body: [{
+        order: number;
+        title: string;
+        url: string;
+        module: string;
+        description?: string | undefined;
+    }, ...{
+        order: number;
+        title: string;
+        url: string;
+        module: string;
+        description?: string | undefined;
+    }[]];
+}>;
 export declare const updateMaterialSchema: z.ZodObject<{
     params: z.ZodObject<{
         materialId: z.ZodString;
@@ -71,4 +144,6 @@ export declare const deleteMaterialSchema: z.ZodObject<{
         materialId: string;
     };
 }>;
+export type GetMaterialParams = z.infer<typeof updateMaterialSchema>["params"];
+export type UpdateMaterialBody = z.infer<typeof updateMaterialSchema>["body"];
 //# sourceMappingURL=material.zod.d.ts.map

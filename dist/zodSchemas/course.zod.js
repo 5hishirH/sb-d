@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteCourseSchema = exports.updateCourseSchema = exports.getCourseSchema = exports.getAllCoursesSchema = exports.createManyCoursesWithContentSchema = exports.createCourseWithContentSchema = void 0;
+exports.updateCourseSchema = exports.getCourseSchema = exports.getAllCoursesSchema = exports.createManyCoursesWithContentSchema = exports.createCourseWithContentSchema = void 0;
 const zod_1 = require("zod");
 const zod_2 = require("../utils/zod");
 const instructor_model_1 = __importDefault(require("../models/instructor.model"));
@@ -18,7 +18,9 @@ const quizSchema = zod_1.z.object({
     title: zod_1.z.string({ required_error: "Quiz title is required" }),
     timeLimit: zod_1.z.number().optional(),
     order: zod_1.z.number({ required_error: "Quiz order is required" }),
-    questions: zod_1.z.array(questionSchema).optional(),
+    questions: zod_1.z
+        .array(questionSchema)
+        .nonempty("Atleast one questions is required"),
 });
 const videoSchema = zod_1.z.object({
     title: zod_1.z.string().optional(),
@@ -38,26 +40,61 @@ const assignmentSchema = zod_1.z.object({
     duration: zod_1.z.number({ required_error: "Duration is required" }),
     order: zod_1.z.number({ required_error: "Assignment order is required" }),
 });
-const moduleSchema = zod_1.z.object({
+const moduleSchema = zod_1.z
+    .object({
     title: zod_1.z.string().optional(),
     order: zod_1.z.number({ required_error: "Module order is required" }),
     videos: zod_1.z.array(videoSchema).optional(),
     materials: zod_1.z.array(materialSchema).optional(),
     quizzes: zod_1.z.array(quizSchema).optional(),
     assignments: zod_1.z.array(assignmentSchema).optional(),
+})
+    .refine((data) => {
+    const hasContent = (data.videos && data.videos.length > 0) ||
+        (data.materials && data.materials.length > 0) ||
+        (data.quizzes && data.quizzes.length > 0) ||
+        (data.assignments && data.assignments.length > 0);
+    return hasContent;
+}, {
+    message: "A module must contain at least one video, material, quiz, or assignment.",
 });
-const singleCourseWithContentSchema = zod_1.z.object({
+const singleCourseWithContentSchema = zod_1.z
+    .object({
     title: zod_1.z.string({ required_error: "Title is required" }),
     description: zod_1.z.string().optional(),
     thumbnailUrl: zod_1.z.string().url("Thumbnail must be a valid URL").optional(),
     price: zod_1.z.number({ required_error: "Price is required" }).min(0),
-    instructor: zod_2.objectIdSchema.refine(async (id) => !!(await instructor_model_1.default.findById(id)), {
-        message: "Instructor not found",
-    }),
-    category: zod_2.objectIdSchema.refine(async (id) => !!(await courseCategory_model_1.default.findById(id)), {
-        message: "Category not found",
-    }),
+    duration: zod_1.z
+        .number({ required_error: "Course duration is required" })
+        .min(0),
+    rating: zod_1.z.number().min(0).max(5).optional(),
+    instructor: zod_1.z
+        .array(zod_2.objectIdSchema)
+        .nonempty("At least one instructor is required."),
+    category: zod_1.z
+        .array(zod_2.objectIdSchema)
+        .nonempty("At least one category is required."),
     modules: zod_1.z.array(moduleSchema).optional(),
+})
+    .refine(async (data) => {
+    const uniqueIds = [...new Set(data.instructor)];
+    const count = await instructor_model_1.default.countDocuments({
+        _id: { $in: uniqueIds },
+    });
+    return count === uniqueIds.length;
+}, {
+    message: "One or more instructor IDs are invalid.",
+    path: ["instructor"],
+})
+    .refine(async (data) => {
+    const uniqueIds = [...new Set(data.category)];
+    const count = await courseCategory_model_1.default.countDocuments({
+        _id: { $in: uniqueIds },
+    });
+    return count === uniqueIds.length;
+}, {
+    message: "One or more category IDs are invalid.",
+    path: ["category"],
 });
 exports.createCourseWithContentSchema = zod_1.z.object({
     body: singleCourseWithContentSchema,
@@ -71,11 +108,23 @@ exports.getAllCoursesSchema = zod_1.z.object({
     query: zod_1.z.object({
         category: zod_2.objectIdSchema.optional(),
         instructor: zod_2.objectIdSchema.optional(),
+        search: zod_1.z.string().optional(),
+        sortBy: zod_1.z
+            .string()
+            .regex(/^[a-zA-Z_]+:(asc|desc)$/, "Sort must be in 'field:order' format, e.g., 'createdAt:desc'")
+            .optional(),
+        page: zod_1.z.string().optional().default("1"),
+        limit: zod_1.z.string().optional().default("10"),
     }),
 });
 exports.getCourseSchema = zod_1.z.object({
     params: zod_1.z.object({
         courseId: zod_2.objectIdSchema,
+    }),
+    query: zod_1.z.object({
+        content: zod_1.z
+            .enum(["videos", "materials", "quizzes", "assignments"])
+            .optional(),
     }),
 });
 exports.updateCourseSchema = zod_1.z.object({
@@ -89,32 +138,34 @@ exports.updateCourseSchema = zod_1.z.object({
         thumbnailUrl: zod_1.z.string().url("Must be a valid URL").optional(),
         price: zod_1.z.number().min(0).optional(),
         duration: zod_1.z.number().min(0).optional(),
-        instructor: zod_2.objectIdSchema.optional(),
-        category: zod_2.objectIdSchema.optional(),
+        rating: zod_1.z.number().min(0).max(5).optional(),
+        isActive: zod_1.z.boolean().optional(),
+        instructor: zod_1.z.array(zod_2.objectIdSchema).nonempty().optional(),
+        category: zod_1.z.array(zod_2.objectIdSchema).nonempty().optional(),
+    })
+        .refine((data) => Object.keys(data).length > 0, {
+        message: "Update body cannot be empty.",
     })
         .refine(async (data) => {
         if (!data.instructor)
             return true;
-        return !!(await instructor_model_1.default.findById(data.instructor));
+        const uniqueIds = [...new Set(data.instructor)];
+        const count = await instructor_model_1.default.countDocuments({
+            _id: { $in: uniqueIds },
+        });
+        return count === uniqueIds.length;
     }, {
-        message: "Instructor not found with the provided ID",
+        message: "One or more instructor IDs are invalid.",
         path: ["instructor"],
     })
         .refine(async (data) => {
         if (!data.category)
             return true;
-        return !!(await courseCategory_model_1.default.findById(data.category));
-    }, {
-        message: "Category not found with the provided ID",
-        path: ["category"],
-    })
-        .refine((data) => Object.keys(data).length > 0, {
-        message: "Update body cannot be empty.",
-    }),
-});
-exports.deleteCourseSchema = zod_1.z.object({
-    params: zod_1.z.object({
-        courseId: zod_2.objectIdSchema,
-    }),
+        const uniqueIds = [...new Set(data.category)];
+        const count = await courseCategory_model_1.default.countDocuments({
+            _id: { $in: uniqueIds },
+        });
+        return count === uniqueIds.length;
+    }, { message: "One or more category IDs are invalid.", path: ["category"] }),
 });
 //# sourceMappingURL=course.zod.js.map

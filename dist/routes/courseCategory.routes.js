@@ -13,6 +13,9 @@ router
     .post((0, validate_1.validate)(courseCategory_zod_1.createCourseCategorySchema), courseCategory_controller_1.createCourseCategory)
     .get(courseCategory_controller_1.getAllCourseCategories);
 router
+    .route("/bulk")
+    .post((0, validate_1.validate)(courseCategory_zod_1.createManyCourseCategorySchema), courseCategory_controller_1.createManyCategories);
+router
     .route("/:categoryId")
     .get((0, validate_1.validate)(courseCategory_zod_1.getCourseCategorySchema), courseCategory_controller_1.getCourseCategoryById)
     .put((0, validate_1.validate)(courseCategory_zod_1.updateCourseCategorySchema), courseCategory_controller_1.updateCourseCategoryById)

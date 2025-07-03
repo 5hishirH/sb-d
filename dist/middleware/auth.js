@@ -45,11 +45,11 @@ exports.authenticate = (0, asyncHandler_1.asyncHandler)(async (req, _, next) => 
     }
 });
 const authorize = (...roles) => {
-    return (0, asyncHandler_1.asyncHandler)((req, _, next) => {
+    return (0, asyncHandler_1.asyncHandler)(async (req, _, next) => {
         if (!req.user) {
             throw AppError_1.AppError.unauthorized("Authentication required. Please log in.");
         }
-        if (!req.user.role || !roles.includes(req.user.role)) {
+        if (!roles.includes(req.user.accountRole)) {
             throw AppError_1.AppError.forbidden("You do not have permission to perform this action.");
         }
         next();

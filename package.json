@@ -4,8 +4,13 @@
   "description": "Express + TypeScript + Zod + Mongoose starter template",
   "main": "dist/index.js",
   "scripts": {
-    "build": "npm install --production",
-    "start": "node dist/index.js"
+    "build": "tsc && tsc-alias",
+    "clean": "rimraf dist",
+    "build:full": "npm run clean && tsc && tsc-alias",
+    "build:vercel": "npm run clean && tsc && tsc-alias && vercel --prod",
+    "build:docker": "docker build -t sb-d-image . && docker save -o d-img/sb-d-image.tar sb-d-image",
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts"
   },
   "keywords": [
     "express",
@@ -21,10 +26,12 @@
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "googleapis": "^150.0.1",
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.0.3",
     "morgan": "^1.10.0",
+    "nodemailer": "^7.0.3",
     "rimraf": "^6.0.1",
     "zod": "^3.22.4"
   },
@@ -35,6 +42,7 @@
     "@types/jsonwebtoken": "^9.0.5",
     "@types/morgan": "^1.9.9",
     "@types/node": "^20.10.5",
+    "@types/nodemailer": "^6.4.17",
     "tsc-alias": "^1.8.16",
     "tsx": "^4.6.2",
     "typescript": "^5.3.3"
