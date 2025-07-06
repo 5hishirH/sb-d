@@ -5,6 +5,7 @@ export interface ICourseVideo extends Document {
     description?: string;
     url: string;
     order: number;
+    isUnlockedByDefault: boolean;
     module: ICourseModule["_id"];
 }
 declare const CourseVideo: Model<ICourseVideo>;

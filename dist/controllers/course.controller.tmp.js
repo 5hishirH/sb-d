@@ -113,12 +113,10 @@ exports.createManyCoursesWithContent = (0, asyncHandler_1.asyncHandler)(async (r
 exports.getAllCourses = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
     const { category, instructor, search, sortBy, page, limit } = req.query;
     const filter = {};
-    if (category) {
+    if (category)
         filter.category = category;
-    }
-    if (instructor) {
+    if (instructor)
         filter.instructor = instructor;
-    }
     if (search) {
         filter.$text = { $search: search };
     }
@@ -157,108 +155,102 @@ exports.getAllCourses = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
 });
 exports.getCourseWithContent = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
     const { courseId } = req.params;
-    const courses = await course_model_1.default.aggregate([
-        { $match: { _id: new mongoose_1.default.Types.ObjectId(courseId) } },
-        {
-            $lookup: {
-                from: "coursemodules",
-                localField: "_id",
-                foreignField: "course",
-                as: "modules",
-            },
-        },
-        { $unwind: { path: "$modules", preserveNullAndEmptyArrays: true } },
-        { $sort: { "modules.order": 1 } },
-        {
-            $lookup: {
-                from: "coursevideos",
-                localField: "modules._id",
-                foreignField: "module",
-                as: "modules.videos",
-            },
-        },
-        {
-            $lookup: {
-                from: "materials",
-                localField: "modules._id",
-                foreignField: "module",
-                as: "modules.materials",
-            },
-        },
-        {
-            $lookup: {
-                from: "quizzes",
-                localField: "modules._id",
-                foreignField: "module",
-                as: "modules.quizzes",
-            },
-        },
-        {
-            $lookup: {
-                from: "assignments",
-                localField: "modules._id",
-                foreignField: "module",
-                as: "modules.assignments",
-            },
-        },
-        {
-            $group: {
-                _id: "$_id",
-                title: { $first: "$title" },
-                description: { $first: "$description" },
-                instructor: { $first: "$instructor" },
-                category: { $first: "$category" },
-                modules: { $push: "$modules" },
-            },
-        },
-        {
-            $lookup: {
-                from: "instructors",
-                localField: "instructor",
-                foreignField: "_id",
-                as: "instructors",
-            },
-        },
-        {
-            $lookup: {
-                from: "coursecategories",
-                localField: "category",
-                foreignField: "_id",
-                as: "categories",
-            },
-        },
-        {
-            $addFields: {
-                instructors: "$instructors",
-                categories: "$categories",
-            },
-        },
-        {
-            $project: {
-                _id: 1,
-                title: 1,
-                description: 1,
-                instructors: 1,
-                categories: 1,
-                modules: {
-                    _id: 1,
-                    title: 1,
-                    order: 1,
-                    videos: 1,
-                    materials: 1,
-                    quizzes: 1,
-                    assignments: 1,
-                },
-            },
-        },
-    ]);
-    if (!courses || courses.length === 0) {
-        throw AppError_1.AppError.notFound("Course not found");
+    const { content } = req.query;
+    const courseExists = await course_model_1.default.findById(courseId).lean();
+    if (!courseExists) {
+        throw AppError_1.AppError.notFound(`Course not found with id of ${courseId}`);
     }
-    const course = courses[0];
-    res.status(200).json({
+    const moduleIds = await courseModule_model_1.default.find({ course: courseId }).distinct("_id");
+    if (content) {
+        let data = [];
+        const filter = { module: { $in: moduleIds } };
+        switch (content) {
+            case "videos":
+                data = await courseVideo_model_1.default.find(filter).sort({ order: "asc" });
+                break;
+            case "materials":
+                data = await material_model_1.default.find(filter).sort({ order: "asc" });
+                break;
+            case "quizzes":
+                data = await quiz_model_1.default.find(filter).sort({ order: "asc" });
+                break;
+            case "assignments":
+                data = await assignment_model_1.default.find(filter).sort({ order: "asc" });
+                break;
+        }
+        return res.status(200).json({
+            success: true,
+            count: data.length,
+            data: data,
+        });
+    }
+    const course = courseExists;
+    const modules = await courseModule_model_1.default.find({ course: courseId })
+        .sort({ order: "asc" })
+        .lean();
+    const [videos, materials, quizzes, assignments] = await Promise.all([
+        courseVideo_model_1.default.find({ module: { $in: moduleIds } })
+            .sort({ order: "asc" })
+            .lean(),
+        material_model_1.default.find({ module: { $in: moduleIds } })
+            .sort({ order: "asc" })
+            .lean(),
+        quiz_model_1.default.find({ module: { $in: moduleIds } })
+            .sort({ order: "asc" })
+            .lean(),
+        assignment_model_1.default.find({ module: { $in: moduleIds } })
+            .sort({ order: "asc" })
+            .lean(),
+    ]);
+    const contentByModule = new Map();
+    videos.forEach((v) => {
+        const id = v.module.toString();
+        if (!contentByModule.has(id))
+            contentByModule.set(id, { videos: [] });
+        contentByModule.get(id).videos.push(v);
+    });
+    materials.forEach((m) => {
+        const id = m.module.toString();
+        if (!contentByModule.has(id))
+            contentByModule.set(id, { materials: [] });
+        if (!contentByModule.get(id).materials)
+            contentByModule.get(id).materials = [];
+        contentByModule.get(id).materials.push(m);
+    });
+    quizzes.forEach((q) => {
+        const id = q.module.toString();
+        if (!contentByModule.has(id))
+            contentByModule.set(id, { quizzes: [] });
+        if (!contentByModule.get(id).quizzes)
+            contentByModule.get(id).quizzes = [];
+        contentByModule.get(id).quizzes.push(q);
+    });
+    assignments.forEach((a) => {
+        const id = a.module.toString();
+        if (!contentByModule.has(id))
+            contentByModule.set(id, { assignments: [] });
+        if (!contentByModule.get(id).assignments)
+            contentByModule.get(id).assignments = [];
+        contentByModule.get(id).assignments.push(a);
+    });
+    const populatedModules = modules.map((module) => {
+        const moduleIdString = module._id.toString();
+        const content = contentByModule.get(moduleIdString) || {};
+        return {
+            ...module,
+            videos: content.videos || [],
+            materials: content.materials || [],
+            quizzes: content.quizzes || [],
+            assignments: content.assignments || [],
+        };
+    });
+    const finalResponse = {
+        ...course,
+        modules: populatedModules,
+    };
+    return res.status(200).json({
         success: true,
-        data: course,
+        data: finalResponse,
     });
 });
 exports.getCourseContentCount = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
@@ -399,4 +391,4 @@ exports.deleteCourseAndContents = (0, asyncHandler_1.asyncHandler)(async (req, r
         session.endSession();
     }
 });
-//# sourceMappingURL=course.controller.js.map
+//# sourceMappingURL=course.controller.tmp.js.map

@@ -11,6 +11,7 @@ const quizSchema = new mongoose_1.Schema({
     title: { type: String, required: true },
     timeLimit: { type: Number },
     order: { type: Number, required: true },
+    isUnlockedByDefault: { type: Boolean, default: true },
     module: {
         type: mongoose_1.Schema.Types.ObjectId,
         ref: "CourseModule",

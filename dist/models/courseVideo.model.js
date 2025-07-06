@@ -6,6 +6,7 @@ const courseVideoSchema = new mongoose_1.Schema({
     description: { type: String },
     url: { type: String, required: true },
     order: { type: Number, required: true },
+    isUnlockedByDefault: { type: Boolean, default: true },
     module: {
         type: mongoose_1.Schema.Types.ObjectId,
         ref: "CourseModule",

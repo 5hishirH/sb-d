@@ -4,8 +4,9 @@ const mongoose_1 = require("mongoose");
 const assignmentSchema = new mongoose_1.Schema({
     title: { type: String, required: true },
     description: { type: String },
-    duration: { type: mongoose_1.Schema.Types.Decimal128, required: true },
+    duration: { type: Number, required: true },
     order: { type: Number, required: true },
+    isUnlockedByDefault: { type: Boolean, default: true },
     module: {
         type: mongoose_1.Schema.Types.ObjectId,
         ref: "CourseModule",

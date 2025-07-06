@@ -151,7 +151,9 @@ export declare const getAllCourses: import("express").RequestHandler<{}, {}, {},
 }, Record<string, any>>;
 export declare const getCourseWithContent: import("express").RequestHandler<{
     courseId: string;
-}, {}, {}, {}, Record<string, any>>;
+}, {}, {}, {
+    content?: "videos" | "materials" | "quizzes" | "assignments" | undefined;
+}, Record<string, any>>;
 export declare const getCourseContentCount: import("express").RequestHandler<{
     courseId: string;
 }, {}, any, unknown, Record<string, any>>;
@@ -177,4 +179,4 @@ export declare const updateCourseById: import("express").RequestHandler<{
 export declare const deleteCourseAndContents: import("express").RequestHandler<{
     courseId: string;
 }, {}, any, unknown, Record<string, any>>;
-//# sourceMappingURL=course.controller.d.ts.map
+//# sourceMappingURL=course.controller.tmp.d.ts.map

@@ -5,6 +5,7 @@ export interface IAssignment extends Document {
     description?: string;
     duration: number;
     order: number;
+    isUnlockedByDefault: boolean;
     module: ICourseModule["_id"];
 }
 declare const Assignment: Model<IAssignment>;

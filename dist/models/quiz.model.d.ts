@@ -10,6 +10,7 @@ export interface IQuiz extends Document {
     title: string;
     timeLimit?: number;
     order: number;
+    isUnlockedByDefault: boolean;
     module: ICourseModule["_id"];
     questions: IQuestionSubdocument[];
 }

@@ -5,6 +5,7 @@ export interface IMaterial extends Document {
     description?: string;
     url: string;
     order: number;
+    isUnlockedByDefault: boolean;
     module: ICourseModule["_id"];
 }
 declare const Material: Model<IMaterial>;
