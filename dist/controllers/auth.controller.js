@@ -10,6 +10,7 @@ const jwt_1 = require("../utils/jwt");
 const asyncHandler_1 = require("../utils/asyncHandler");
 const crypto_1 = __importDefault(require("crypto"));
 const sendMailWithMailtrap_1 = require("../utils/sendMailWithMailtrap");
+const constants_1 = require("../constants");
 exports.register = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
     const { name, email, password } = req.body;
     const existingUser = await user_model_1.User.findOne({ email });
@@ -129,9 +130,7 @@ exports.verifyEmail = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
     user.emailVerificationToken = undefined;
     user.emailVerificationTokenExpires = undefined;
     await user.save();
-    res
-        .status(200)
-        .json({ success: true, message: "Email verified successfully!" });
+    res.status(200).send(constants_1.verifyEmailView);
 });
 exports.forgotPassword = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
     const { email } = req.body;
@@ -179,9 +178,7 @@ exports.resetPassword = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
     user.passwordResetToken = undefined;
     user.passwordResetTokenExpires = undefined;
     await user.save();
-    res
-        .status(200)
-        .json({
+    res.status(200).json({
         success: true,
         message: "Password has been reset successfully.",
     });
