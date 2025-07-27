@@ -1,0 +1,35 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const auth_routes_1 = __importDefault(require("../../features/v1/auth/auth.routes"));
+const user_routes_1 = __importDefault(require("../../features/v1/user/user.routes"));
+const course_routes_1 = __importDefault(require("../../features/v1/course/course.routes"));
+const instructor_routes_1 = __importDefault(require("../../features/v1/instructor/instructor.routes"));
+const courseCategory_routes_1 = __importDefault(require("../../features/v1/courseCategory/courseCategory.routes"));
+const courseVideo_routes_1 = __importDefault(require("../../features/v1/course/module/video/courseVideo.routes"));
+const material_routes_1 = __importDefault(require("../../features/v1/course/module/material/material.routes"));
+const assignment_routes_1 = __importDefault(require("../../features/v1/course/assignment/assignment.routes"));
+const quiz_routes_1 = __importDefault(require("../../features/v1/quiz/quiz.routes"));
+const writer_routes_1 = __importDefault(require("../../features/v1/writer/writer.routes"));
+const ebookCategory_routes_1 = __importDefault(require("../../features/v1/ebookCategory/ebookCategory.routes"));
+const ebook_routes_1 = __importDefault(require("../../features/v1/ebook/ebook.routes"));
+const contactSubmission_routes_1 = __importDefault(require("../../features/v1/contactSubmission/contactSubmission.routes"));
+const router = (0, express_1.Router)();
+router.use("/api/auth", auth_routes_1.default);
+router.use("/api/users", user_routes_1.default);
+router.use("/api/instructors", instructor_routes_1.default);
+router.use("/api/course-categories", courseCategory_routes_1.default);
+router.use("/api/courses", course_routes_1.default);
+router.use("/api/course-videos", courseVideo_routes_1.default);
+router.use("/api/course-materials", material_routes_1.default);
+router.use("/api/course-assignments", assignment_routes_1.default);
+router.use("/api/quizzes", quiz_routes_1.default);
+router.use("/api/writers", writer_routes_1.default);
+router.use("/api/ebook-categories", ebookCategory_routes_1.default);
+router.use("/api/ebooks", ebook_routes_1.default);
+router.use("/api/contacts", contactSubmission_routes_1.default);
+exports.default = router;
+//# sourceMappingURL=index.js.map

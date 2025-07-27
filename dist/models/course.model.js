@@ -4,7 +4,8 @@ const mongoose_1 = require("mongoose");
 const courseSchema = new mongoose_1.Schema({
     title: { type: String, required: true },
     description: { type: String },
-    thumbnailUrl: { type: String, required: true },
+    thumbnailUrl: { type: String },
+    videoThumbnailUrl: { type: String },
     price: { type: Number, min: 0, default: 0 },
     duration: { type: Number, required: true },
     rating: { type: Number, min: 0, max: 5 },

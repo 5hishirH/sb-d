@@ -1,12 +1,12 @@
 import { Document, Model } from "mongoose";
-import { ICourseModule } from "./courseModule.model";
+import { ICourse } from "../models/course.model";
 export interface IAssignment extends Document {
     title: string;
     description?: string;
     duration: number;
     order: number;
-    isUnlockedByDefault: boolean;
-    module: ICourseModule["_id"];
+    isAccessedByDefault: boolean;
+    course: ICourse["_id"];
 }
 declare const Assignment: Model<IAssignment>;
 export default Assignment;

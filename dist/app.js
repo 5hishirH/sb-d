@@ -7,30 +7,22 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const helmet_1 = __importDefault(require("helmet"));
 const morgan_1 = __importDefault(require("morgan"));
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const notFound_1 = require("./middleware/notFound");
 const errorHandler_1 = require("./middleware/errorHandler");
-const user_routes_1 = __importDefault(require("./routes/user.routes"));
-const auth_routes_1 = __importDefault(require("./routes/auth.routes"));
-const course_routes_1 = __importDefault(require("./routes/course.routes"));
-const instructor_routes_1 = __importDefault(require("./routes/instructor.routes"));
-const courseCategory_routes_1 = __importDefault(require("./routes/courseCategory.routes"));
-const courseVideo_routes_1 = __importDefault(require("./routes/courseVideo.routes"));
-const material_routes_1 = __importDefault(require("./routes/material.routes"));
-const assignment_routes_1 = __importDefault(require("./routes/assignment.routes"));
-const quiz_routes_1 = __importDefault(require("./routes/quiz.routes"));
-const writer_routes_1 = __importDefault(require("./routes/writer.routes"));
-const ebookCategory_routes_1 = __importDefault(require("./routes/ebookCategory.routes"));
-const ebook_routes_1 = __importDefault(require("./routes/ebook.routes"));
-const contactSubmission_routes_1 = __importDefault(require("./routes/contactSubmission.routes"));
+const v1_1 = __importDefault(require("./features/v1"));
+const v0_1 = __importDefault(require("./features/v0"));
+const index_1 = require("./config/env/index");
 const app = (0, express_1.default)();
 app.use((0, helmet_1.default)());
 app.use((0, cors_1.default)({
-    origin: process.env.CORS_ORIGIN || "http://localhost:3000",
+    origin: index_1.env.CORS_ORIGINS,
     credentials: true,
 }));
 app.use((0, morgan_1.default)("combined"));
 app.use(express_1.default.json({ limit: "10mb" }));
 app.use(express_1.default.urlencoded({ extended: true }));
+app.use((0, cookie_parser_1.default)());
 app.get("/health", (_, res) => {
     res.status(200).json({
         status: "OK",
@@ -38,19 +30,8 @@ app.get("/health", (_, res) => {
         timestamp: new Date().toISOString(),
     });
 });
-app.use("/api/auth", auth_routes_1.default);
-app.use("/api/users", user_routes_1.default);
-app.use("/api/instructors", instructor_routes_1.default);
-app.use("/api/course-categories", courseCategory_routes_1.default);
-app.use("/api/courses", course_routes_1.default);
-app.use("/api/course-videos", courseVideo_routes_1.default);
-app.use("/api/course-materials", material_routes_1.default);
-app.use("/api/course-assignments", assignment_routes_1.default);
-app.use("/api/course-quizzes", quiz_routes_1.default);
-app.use("/api/writers", writer_routes_1.default);
-app.use("/api/ebook-categories", ebookCategory_routes_1.default);
-app.use("/api/ebooks", ebook_routes_1.default);
-app.use("/api/contacts", contactSubmission_routes_1.default);
+app.use("/api/v0", v0_1.default);
+app.use("/", v1_1.default);
 app.use(notFound_1.notFound);
 app.use(errorHandler_1.errorHandler);
 exports.default = app;

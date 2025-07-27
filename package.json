@@ -7,8 +7,10 @@
     "build": "tsc && tsc-alias",
     "clean": "rimraf dist",
     "build:full": "npm run clean && tsc && tsc-alias",
-    "build:vercel": "npm run clean && tsc && tsc-alias && vercel --prod",
+    "deploy:vercel": "npm run build && vercel --prod",
     "build:docker": "docker build -t sb-d-image . && docker save -o d-img/sb-d-image.tar sb-d-image",
+    "deploy:dev": "rsync -avz --exclude-from='exclude-list.txt' . asus-sh:~/code/sb-wm/ && ssh asus-sh 'cd ~/code/sb-wm/ && docker compose up -d --build'",
+    "cp:render": "npm run build && cp -rf package*.json dist ~/code/sb-d",
     "start": "node dist/index.js",
     "dev": "tsx watch src/index.ts"
   },
@@ -23,6 +25,7 @@
   "license": "MIT",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
@@ -37,6 +40,7 @@
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
+    "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.5",

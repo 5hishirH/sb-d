@@ -1,10 +1,11 @@
 import { Document, Model } from "mongoose";
-import { IInstructor } from "./instructor.model";
-import { ICourseCategory } from "./courseCategory.model";
+import { IInstructor } from "../models/instructor.model";
+import { ICourseCategory } from "../models/courseCategory.model";
 export interface ICourse extends Document {
     title: string;
     description?: string;
-    thumbnailUrl: string;
+    thumbnailUrl?: string;
+    videoThumbnailUrl?: string;
     price: number;
     duration: number;
     rating: number;

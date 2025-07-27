@@ -1,0 +1,1 @@
+{"version":3,"file":"courseCategory.model.d.ts","sourceRoot":"","sources":["../../../../src/features/v1/courseCategory/courseCategory.model.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,QAAQ,EAAS,KAAK,EAAU,MAAM,UAAU,CAAC;AAE1D,MAAM,WAAW,eAAgB,SAAQ,QAAQ;IAC/C,IAAI,EAAE,MAAM,CAAC;CACd;AAUD,QAAA,MAAM,cAAc,EAAE,KAAK,CAAC,eAAe,CAG1C,CAAC;AACF,eAAe,cAAc,CAAC"}

@@ -1,6 +1,6 @@
 import mongoose, { Document } from "mongoose";
-import { IUser } from "./user.model";
-import { ICourse } from "./course.model";
+import { IUser } from "../models/user.model";
+import { ICourse } from "../models/course.model";
 export interface IReview extends Document {
     userId: IUser["_id"];
     courseId: ICourse["_id"];

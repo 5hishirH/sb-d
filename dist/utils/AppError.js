@@ -29,6 +29,9 @@ class AppError extends Error {
     static notFound(message = "Not found") {
         return new AppError(404, message);
     }
+    static conflict(message = "Conflict") {
+        return new AppError(409, message);
+    }
     static internal(message = "Internal server error") {
         return new AppError(500, message);
     }

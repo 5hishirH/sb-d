@@ -9,18 +9,14 @@ const user_model_1 = require("../models/user.model");
 const AppError_1 = require("../utils/AppError");
 const asyncHandler_1 = require("../utils/asyncHandler");
 exports.authenticate = (0, asyncHandler_1.asyncHandler)(async (req, _, next) => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        throw AppError_1.AppError.forbidden("Authentication token is required.");
-    }
-    const token = authHeader.split(" ")[1];
+    const token = req.cookies.zenith;
     if (!token) {
-        throw AppError_1.AppError.forbidden("Authentication token is required.");
+        throw AppError_1.AppError.forbidden("Authentication required.");
     }
     const jwtSecret = process.env.JWT_SECRET;
     if (!jwtSecret) {
         console.error("JWT_SECRET is not configured in environment variables.");
-        throw AppError_1.AppError.forbidden("Server configuration error.");
+        throw AppError_1.AppError.internal("Server configuration error.");
     }
     try {
         const decoded = jsonwebtoken_1.default.verify(token, jwtSecret);

@@ -1,11 +1,11 @@
 import { Document, Model } from "mongoose";
-import { ICourseModule } from "./courseModule.model";
+import { ICourseModule } from "../models/courseModule.model";
 export interface IMaterial extends Document {
     title: string;
     description?: string;
     url: string;
     order: number;
-    isUnlockedByDefault: boolean;
+    isAccessedByDefault: boolean;
     module: ICourseModule["_id"];
 }
 declare const Material: Model<IMaterial>;

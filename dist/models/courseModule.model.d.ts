@@ -1,5 +1,5 @@
 import { Document, Model } from "mongoose";
-import { ICourse } from "./course.model";
+import { ICourse } from "../models/course.model";
 export interface ICourseModule extends Document {
     title?: string;
     order: number;

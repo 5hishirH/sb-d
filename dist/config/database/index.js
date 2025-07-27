@@ -4,29 +4,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.connectDB = void 0;
+const env_1 = require("../../config/env");
 const mongoose_1 = __importDefault(require("mongoose"));
 const connectDB = async () => {
     try {
-        const mongoUri = process.env.MONGODB_URI;
-        if (!mongoUri) {
-            throw new Error('MONGODB_URI is not defined in environment variables');
-        }
-        const conn = await mongoose_1.default.connect(mongoUri);
+        const conn = await mongoose_1.default.connect(env_1.env.MONGODB_URI);
         console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
-        mongoose_1.default.connection.on('error', (err) => {
-            console.error('❌ MongoDB connection error:', err);
+        mongoose_1.default.connection.on("error", (err) => {
+            console.error("❌ MongoDB connection error:", err);
         });
-        mongoose_1.default.connection.on('disconnected', () => {
-            console.log('📡 MongoDB disconnected');
+        mongoose_1.default.connection.on("disconnected", () => {
+            console.log("📡 MongoDB disconnected");
         });
-        process.on('SIGINT', async () => {
+        process.on("SIGINT", async () => {
             await mongoose_1.default.connection.close();
-            console.log('🔌 MongoDB connection closed through app termination');
+            console.log("🔌 MongoDB connection closed through app termination");
             process.exit(0);
         });
     }
     catch (error) {
-        console.error('❌ Error connecting to MongoDB:', error);
+        console.error("❌ Error connecting to MongoDB:", error);
         process.exit(1);
     }
 };

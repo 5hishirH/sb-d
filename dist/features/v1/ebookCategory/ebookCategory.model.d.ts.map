@@ -1,0 +1,1 @@
+{"version":3,"file":"ebookCategory.model.d.ts","sourceRoot":"","sources":["../../../../src/features/v1/ebookCategory/ebookCategory.model.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,QAAQ,EAAS,KAAK,EAAU,MAAM,UAAU,CAAC;AAE1D,MAAM,WAAW,cAAe,SAAQ,QAAQ;IAC9C,IAAI,EAAE,MAAM,CAAC;CACd;AASD,QAAA,MAAM,aAAa,EAAE,KAAK,CAAC,cAAc,CAGxC,CAAC;AAEF,eAAe,aAAa,CAAC"}

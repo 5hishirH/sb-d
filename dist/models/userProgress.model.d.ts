@@ -1,51 +1,67 @@
 import { Document, Model } from "mongoose";
-import { IUser } from "./user.model";
-import { ICourse } from "./course.model";
-import { ICourseVideo } from "./courseVideo.model";
-import { IMaterial } from "./material.model";
-import { IQuiz } from "./quiz.model";
-import { IAssignment } from "./assignment.model";
-export interface IQuizAnswer {
-    question: string;
-    answer: string;
-    isCorrect: boolean;
-}
-export interface IWatchedVideo {
+import { IUser } from "../models/user.model";
+import { ICourse } from "../models/course.model";
+import { ICourseVideo } from "../models/courseVideo.model";
+import { IMaterial } from "../models/material.model";
+import { IQuestionSubdocument, IQuiz } from "../models/quiz.model";
+import { IAssignment } from "../models/assignment.model";
+import { ICourseModule } from "../models/courseModule.model";
+export interface IUserCourseVideo {
     video: ICourseVideo["_id"];
+    isAccessed: boolean;
+    accessedAt?: Date;
     watchedAt?: Date;
     watchedDuration: number;
     isCompleted?: boolean;
+    completedAt?: Date;
 }
-export interface IAccessedMaterial {
+export interface IUserCourseMaterial {
     material: IMaterial["_id"];
+    isAccessed: boolean;
     accessedAt?: Date;
 }
+export interface IQuizAnswer extends IQuestionSubdocument {
+    userAns: string;
+    isCorrect: boolean;
+}
 export interface IQuizAttempt {
-    quiz: IQuiz["_id"];
     attemptNumber: number;
-    score: number;
+    fullScore: number;
+    userScore: number;
     answers: IQuizAnswer[];
     completedAt: Date;
 }
+export interface IUserCourseQuiz {
+    quiz: IQuiz["_id"];
+    quizType: "ModuleQuiz" | "FinalQuiz";
+    isAccessed: boolean;
+    attempts: IQuizAttempt[];
+}
 export interface IAssignmentSubmission {
     assignment: IAssignment["_id"];
+    isAccessed: boolean;
     submissionText?: string;
     fileUrl?: string;
-    submittedAt?: Date;
-    grade?: number;
+    submittedAt: Date;
+    fullScore: number;
+    uesrScore?: number;
     feedback?: string;
     gradedAt?: Date;
+}
+export interface IUserCourseModule {
+    module: ICourseModule["_id"];
+    isCompleted: boolean;
+    videos: IUserCourseVideo[];
+    materials: IUserCourseMaterial[];
+    quizzes: IUserCourseQuiz[];
 }
 export interface IUserProgress extends Document {
     user: IUser["_id"];
     course: ICourse["_id"];
-    videosWatched: IWatchedVideo[];
-    materialsAccessed: IAccessedMaterial[];
-    quizAttempts: IQuizAttempt[];
-    assignmentSubmissions: IAssignmentSubmission[];
-    enrolledAt?: Date;
+    modules: IUserCourseModule[];
+    finalQuizzes?: IUserCourseQuiz[];
+    assignments: IAssignmentSubmission[];
     completedAt?: Date;
-    overallProgress?: number;
     createdAt: Date;
     updatedAt: Date;
 }

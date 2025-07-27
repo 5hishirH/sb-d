@@ -1,6 +1,124 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
+const quiz_model_1 = require("../models/quiz.model");
+const userCourseVideoSubSchema = new mongoose_1.Schema({
+    video: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: "CourseVideo",
+        required: true,
+    },
+    isAccessed: {
+        type: Boolean,
+        required: true,
+        default: false,
+    },
+    watchedAt: Date,
+    watchedDuration: {
+        type: Number,
+        required: true,
+        default: 0,
+    },
+    isCompleted: { type: Boolean, required: true, default: false },
+    completedAt: Date,
+});
+const userCourseMaterialSubSchema = new mongoose_1.Schema({
+    material: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: "Material",
+        required: true,
+    },
+    isAccessed: {
+        type: Boolean,
+        required: true,
+        default: false,
+    },
+    accessedAt: Date,
+});
+const userCourseQuizAnsSubSchema = quiz_model_1.questionSubSchema.clone();
+userCourseQuizAnsSubSchema.add({
+    userAns: String,
+    isCorrect: Boolean,
+});
+const userQuizAttemptSchema = new mongoose_1.Schema({
+    attemptNumber: {
+        type: Number,
+        required: true,
+    },
+    fullScore: {
+        type: Number,
+        required: true,
+    },
+    userScore: {
+        type: Number,
+        required: true,
+    },
+    answers: [
+        {
+            type: userCourseQuizAnsSubSchema,
+            required: true,
+        },
+    ],
+    completedAt: {
+        type: Date,
+        required: true,
+    },
+});
+const userCourseQuizSchema = new mongoose_1.Schema({
+    quiz: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: "Quiz",
+        required: true,
+    },
+    quizType: {
+        type: String,
+        enum: ["ModuleQuiz", "FinalQuiz"],
+        required: true,
+    },
+    isAccessed: {
+        type: Boolean,
+        required: true,
+        default: false,
+    },
+    attempts: [
+        {
+            type: userQuizAttemptSchema,
+        },
+    ],
+});
+const userCourseModuleSchema = new mongoose_1.Schema({
+    module: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: "CourseModule",
+        required: true,
+    },
+    isCompleted: Boolean,
+    videos: [userCourseVideoSubSchema],
+    materials: [userCourseMaterialSubSchema],
+    quizzes: [userCourseQuizSchema],
+});
+const userCourseAssignmentSubSchema = new mongoose_1.Schema({
+    assignment: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: "Assignment",
+        required: true,
+    },
+    isAccessed: {
+        type: Boolean,
+        required: true,
+        default: false,
+    },
+    submissionText: String,
+    fileUrl: String,
+    submittedAt: Date,
+    fullScore: {
+        type: Number,
+        required: true,
+    },
+    uesrScore: Number,
+    feedback: String,
+    gradedAt: Date,
+});
 const userProgressSchema = new mongoose_1.Schema({
     user: {
         type: mongoose_1.Schema.Types.ObjectId,
@@ -12,81 +130,20 @@ const userProgressSchema = new mongoose_1.Schema({
         ref: "Course",
         required: true,
     },
-    videosWatched: [
+    modules: [
         {
-            video: {
-                type: mongoose_1.Schema.Types.ObjectId,
-                ref: "CourseVideo",
-            },
-            watchedAt: {
-                type: Date,
-                default: Date.now,
-            },
-            watchedDuration: Number,
-            isCompleted: {
-                type: Boolean,
-                default: false,
-            },
+            type: userCourseModuleSchema,
+            required: true,
         },
     ],
-    materialsAccessed: [
+    finalQuizzes: [userCourseQuizSchema],
+    assignments: [
         {
-            material: {
-                type: mongoose_1.Schema.Types.ObjectId,
-                ref: "Material",
-            },
-            accessedAt: {
-                type: Date,
-                default: Date.now,
-            },
+            type: userCourseAssignmentSubSchema,
+            required: true,
         },
     ],
-    quizAttempts: [
-        {
-            quiz: {
-                type: mongoose_1.Schema.Types.ObjectId,
-                ref: "Quiz",
-            },
-            attemptNumber: Number,
-            score: Number,
-            answers: [
-                {
-                    question: String,
-                    answer: String,
-                    isCorrect: Boolean,
-                },
-            ],
-            completedAt: Date,
-        },
-    ],
-    assignmentSubmissions: [
-        {
-            assignment: {
-                type: mongoose_1.Schema.Types.ObjectId,
-                ref: "Assignment",
-            },
-            submissionText: String,
-            fileUrl: String,
-            submittedAt: {
-                type: Date,
-                default: Date.now,
-            },
-            grade: Number,
-            feedback: String,
-            gradedAt: Date,
-        },
-    ],
-    enrolledAt: {
-        type: Date,
-        default: Date.now,
-    },
     completedAt: Date,
-    overallProgress: {
-        type: Number,
-        default: 0,
-        min: 0,
-        max: 100,
-    },
 }, {
     timestamps: true,
 });

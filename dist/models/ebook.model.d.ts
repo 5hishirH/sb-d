@@ -1,7 +1,7 @@
 import { Document, Model } from "mongoose";
-import { IWriter } from "./writer.model";
-import { IEbookCategory } from "./ebookCategory.model";
-import { IPublication } from "./publication.model";
+import { IWriter } from "../models/writer.model";
+import { IEbookCategory } from "../models/ebookCategory.model";
+import { IPublication } from "../models/publication.model";
 export interface IEbook extends Document {
     name: string;
     thumbnailUrl: string;
