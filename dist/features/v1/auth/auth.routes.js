@@ -13,7 +13,7 @@ router.route("/profile").get(auth_1.authenticate, auth_controller_1.getUserProfi
 router.route("/logout").post(auth_1.authenticate, auth_controller_1.logout);
 router
     .route("/send-verification-email")
-    .post((0, validate_1.validate)(auth_schema_1.sendVerificationEmailSchema), auth_controller_1.getUserProfile);
+    .post((0, validate_1.validate)(auth_schema_1.sendVerificationEmailSchema), auth_controller_1.getVerificationEmail);
 router
     .route("/verify-email/:token")
     .get((0, validate_1.validate)(auth_schema_1.verifyEmailSchema), auth_controller_1.verifyEmail);
