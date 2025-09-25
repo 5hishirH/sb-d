@@ -191,6 +191,12 @@ export declare const getAllCourses: import("express").RequestHandler<{}, {}, {},
 export declare const getCourseWithContent: import("express").RequestHandler<{
     courseId: string;
 }, {}, {}, {}, Record<string, any>>;
+export declare const getUserCourseDetails: import("express").RequestHandler<{
+    courseId: string;
+}, {}, {}, {}, Record<string, any>>;
+export declare const getPublicCourseDetails: import("express").RequestHandler<{
+    courseId: string;
+}, {}, {}, {}, Record<string, any>>;
 export declare const getCourseContentCount: import("express").RequestHandler<{
     courseId: string;
 }, {}, any, unknown, Record<string, any>>;

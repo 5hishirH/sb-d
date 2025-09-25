@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateCourseSchema = exports.getCourseSchema = exports.getAllCoursesSchema = exports.createManyCoursesWithContentSchema = exports.createCourseWithContentSchema = void 0;
+exports.courseIdSchema = exports.updateCourseSchema = exports.getCourseSchema = exports.getAllCoursesSchema = exports.createManyCoursesWithContentSchema = exports.createCourseWithContentSchema = void 0;
 const zod_1 = require("zod");
 const common_schema_1 = require("../schemas/common.schema");
 const instructor_model_1 = __importDefault(require("../models/instructor.model"));
@@ -195,5 +195,10 @@ exports.updateCourseSchema = zod_1.z.object({
         });
         return count === uniqueIds.length;
     }, { message: "One or more category IDs are invalid.", path: ["category"] }),
+});
+exports.courseIdSchema = zod_1.z.object({
+    params: zod_1.z.object({
+        courseId: common_schema_1.objectIdSchema,
+    }),
 });
 //# sourceMappingURL=course.zod.js.map

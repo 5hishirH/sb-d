@@ -3,15 +3,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCourseWithContent = exports.createCourseWithContent = void 0;
+exports.deleteCourseWithContents = exports.getAllCourses = exports.getCourseContentCount = exports.getCourseWithContent = exports.createCourseWithContent = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const asyncHandler_1 = require("../../../utils/asyncHandler");
 const course_model_1 = __importDefault(require("../../../models/course.model"));
 const courseModule_model_1 = __importDefault(require("../../../models/courseModule.model"));
 const courseVideo_model_1 = __importDefault(require("../../../models/courseVideo.model"));
 const quiz_model_1 = __importDefault(require("../../../models/quiz.model"));
-const material_model_1 = require("../../../features/v0/material/material.model");
+const material_model_1 = require("../../../models/material.model");
 const AppError_1 = require("../../../utils/AppError");
+const material_model_2 = __importDefault(require("../../../models/material.model"));
 const createCourseLevelContent = async ({ courseId, finalQuizzes, finalMaterials, session, }) => {
     const contentCreationPromises = [];
     if (finalQuizzes && finalQuizzes.length > 0) {
@@ -92,11 +93,15 @@ exports.createCourseWithContent = (0, asyncHandler_1.asyncHandler)(async (req, r
                 session,
             }),
         ]);
+        const resData = {
+            ...course.toJSON(),
+            category: course["category"][0]?.toString(),
+        };
         await session.commitTransaction();
         res.status(201).json({
             success: true,
             message: "Course and all associated content created successfully!",
-            data: course,
+            data: resData,
         });
     }
     catch (error) {
@@ -131,7 +136,7 @@ exports.getCourseWithContent = (0, asyncHandler_1.asyncHandler)(async (req, res)
         },
         {
             $lookup: {
-                from: "test_materials",
+                from: "materials",
                 localField: "modules._id",
                 foreignField: "module",
                 as: "modules.materials",
@@ -151,6 +156,8 @@ exports.getCourseWithContent = (0, asyncHandler_1.asyncHandler)(async (req, res)
                 title: { $first: "$title" },
                 description: { $first: "$description" },
                 price: { $first: "$price" },
+                discountPercentage: { $first: "$discountPercentage" },
+                enrollmentCount: { $first: "$enrollmentCount" },
                 thumbnailUrl: { $first: "$thumbnailUrl" },
                 videoThumbnailUrl: { $first: "$videoThumbnailUrl" },
                 duration: { $first: "$duration" },
@@ -178,7 +185,7 @@ exports.getCourseWithContent = (0, asyncHandler_1.asyncHandler)(async (req, res)
         },
         {
             $lookup: {
-                from: "test_materials",
+                from: "materials",
                 let: { courseId: "$_id" },
                 pipeline: [
                     {
@@ -197,7 +204,7 @@ exports.getCourseWithContent = (0, asyncHandler_1.asyncHandler)(async (req, res)
                 from: "instructors",
                 localField: "instructor",
                 foreignField: "_id",
-                as: "instructors",
+                as: "instructorDetails",
             },
         },
         {
@@ -205,7 +212,7 @@ exports.getCourseWithContent = (0, asyncHandler_1.asyncHandler)(async (req, res)
                 from: "coursecategories",
                 localField: "category",
                 foreignField: "_id",
-                as: "categories",
+                as: "categoryDetails",
             },
         },
         {
@@ -214,12 +221,37 @@ exports.getCourseWithContent = (0, asyncHandler_1.asyncHandler)(async (req, res)
                 title: 1,
                 description: 1,
                 price: 1,
+                discountPercentage: 1,
                 thumbnailUrl: 1,
                 videoThumbnailUrl: 1,
+                enrollmentCount: 1,
                 duration: 1,
                 rating: 1,
-                instructors: 1,
-                categories: 1,
+                instructor: {
+                    $map: {
+                        input: "$instructorDetails",
+                        as: "i",
+                        in: { _id: "$$i._id", name: "$$i.name" },
+                    },
+                },
+                category: {
+                    $let: {
+                        vars: {
+                            firstCat: { $first: "$categoryDetails" },
+                        },
+                        in: {
+                            $cond: {
+                                if: "$$firstCat",
+                                then: {
+                                    _id: "$$firstCat._id",
+                                    name: "$$firstCat.name",
+                                    iconUrl: "$$firstCat.iconUrl",
+                                },
+                                else: null,
+                            },
+                        },
+                    },
+                },
                 modules: {
                     _id: 1,
                     title: 1,
@@ -239,7 +271,275 @@ exports.getCourseWithContent = (0, asyncHandler_1.asyncHandler)(async (req, res)
     const course = courses[0];
     res.status(200).json({
         success: true,
+        message: `${courseId} retrieved successfully`,
         data: course,
     });
+});
+exports.getCourseContentCount = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
+    const { courseId } = req.params;
+    const result = await course_model_1.default.aggregate([
+        { $match: { _id: new mongoose_1.default.Types.ObjectId(courseId) } },
+        {
+            $lookup: {
+                from: "quizzes",
+                let: { courseId: "$_id" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: { $eq: ["$course", "$$courseId"] },
+                            quizType: "FinalQuiz",
+                        },
+                    },
+                    { $count: "count" },
+                ],
+                as: "finalQuizCount",
+            },
+        },
+        {
+            $lookup: {
+                from: "materials",
+                let: { courseId: "$_id" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: { $eq: ["$course", "$$courseId"] },
+                            materialType: "FinalMaterial",
+                        },
+                    },
+                    { $count: "count" },
+                ],
+                as: "finalMaterialCount",
+            },
+        },
+        {
+            $lookup: {
+                from: "coursemodules",
+                let: { courseId: "$_id" },
+                pipeline: [
+                    { $match: { $expr: { $eq: ["$course", "$$courseId"] } } },
+                    { $count: "count" },
+                ],
+                as: "moduleCount",
+            },
+        },
+        {
+            $lookup: {
+                from: "coursemodules",
+                let: { courseId: "$_id" },
+                pipeline: [
+                    { $match: { $expr: { $eq: ["$course", "$$courseId"] } } },
+                    {
+                        $lookup: {
+                            from: "coursevideos",
+                            localField: "_id",
+                            foreignField: "module",
+                            as: "videos",
+                        },
+                    },
+                    {
+                        $lookup: {
+                            from: "materials",
+                            localField: "_id",
+                            foreignField: "module",
+                            as: "materials",
+                        },
+                    },
+                    {
+                        $lookup: {
+                            from: "quizzes",
+                            localField: "_id",
+                            foreignField: "module",
+                            as: "quizzes",
+                        },
+                    },
+                    {
+                        $group: {
+                            _id: null,
+                            totalVideos: { $sum: { $size: "$videos" } },
+                            totalMaterials: { $sum: { $size: "$materials" } },
+                            totalQuizzes: { $sum: { $size: "$quizzes" } },
+                        },
+                    },
+                ],
+                as: "moduleContentCounts",
+            },
+        },
+        {
+            $project: {
+                _id: 0,
+                modules: {
+                    $ifNull: [{ $first: "$moduleCount.count" }, 0],
+                },
+                videos: {
+                    $ifNull: [{ $first: "$moduleContentCounts.totalVideos" }, 0],
+                },
+                materials: {
+                    $add: [
+                        {
+                            $ifNull: [{ $first: "$moduleContentCounts.totalMaterials" }, 0],
+                        },
+                        {
+                            $ifNull: [{ $first: "$finalMaterialCount.count" }, 0],
+                        },
+                    ],
+                },
+                quizzes: {
+                    $add: [
+                        {
+                            $ifNull: [{ $first: "$moduleContentCounts.totalQuizzes" }, 0],
+                        },
+                        { $ifNull: [{ $first: "$finalQuizCount.count" }, 0] },
+                    ],
+                },
+            },
+        },
+    ]);
+    if (!result || result.length === 0) {
+        throw AppError_1.AppError.notFound("Course not found or has no content to count.");
+    }
+    res.status(200).json({
+        success: true,
+        data: result[0],
+    });
+});
+exports.getAllCourses = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
+    const { category, instructor, search, sortBy, page, limit } = req.query;
+    const filter = {};
+    if (category) {
+        filter.category = new mongoose_1.default.Types.ObjectId(category);
+    }
+    if (instructor) {
+        filter.instructor = new mongoose_1.default.Types.ObjectId(instructor);
+    }
+    if (search) {
+        filter.$text = { $search: search };
+    }
+    const sortOptions = { createdAt: -1 };
+    if (sortBy) {
+        const [field, order] = sortBy.split(":");
+        if (field && (order === "asc" || order === "desc")) {
+            sortOptions[field] = order === "asc" ? 1 : -1;
+        }
+    }
+    const pageNumber = page ? parseInt(page, 10) : 0;
+    const limitNumber = limit ? parseInt(limit, 10) : 0;
+    const hasPagination = pageNumber > 0 && limitNumber > 0;
+    const dataPipeline = [{ $sort: sortOptions }];
+    if (hasPagination) {
+        const skip = (pageNumber - 1) * limitNumber;
+        dataPipeline.push({ $skip: skip }, { $limit: limitNumber });
+    }
+    dataPipeline.push({
+        $lookup: {
+            from: "instructors",
+            localField: "instructor",
+            foreignField: "_id",
+            as: "instructor",
+        },
+    }, {
+        $lookup: {
+            from: "coursecategories",
+            localField: "category",
+            foreignField: "_id",
+            as: "category",
+        },
+    }, {
+        $project: {
+            title: 1,
+            description: 1,
+            price: 1,
+            discountPercentage: 1,
+            thumbnailUrl: 1,
+            duration: 1,
+            enrollmentCount: 1,
+            rating: 1,
+            instructor: {
+                $map: {
+                    input: "$instructor",
+                    as: "i",
+                    in: { _id: "$$i._id", name: "$$i.name" },
+                },
+            },
+            category: {
+                $let: {
+                    vars: {
+                        firstCat: { $first: "$category" },
+                    },
+                    in: {
+                        $cond: {
+                            if: "$$firstCat",
+                            then: {
+                                _id: "$$firstCat._id",
+                                name: "$$firstCat.name",
+                                iconUrl: "$$firstCat.iconUrl",
+                            },
+                            else: null,
+                        },
+                    },
+                },
+            },
+        },
+    });
+    const aggregationResult = await course_model_1.default.aggregate([
+        { $match: filter },
+        {
+            $facet: {
+                metadata: [{ $count: "total" }],
+                data: dataPipeline,
+            },
+        },
+    ]);
+    const courses = aggregationResult[0].data;
+    const totalCourses = aggregationResult[0].metadata[0]?.total || 0;
+    const paginationResponse = { total: totalCourses };
+    if (hasPagination) {
+        paginationResponse.totalPages = Math.ceil(totalCourses / limitNumber);
+        paginationResponse.currentPage = pageNumber;
+    }
+    res.status(200).json({
+        success: true,
+        count: courses.length,
+        pagination: paginationResponse,
+        data: courses,
+    });
+});
+exports.deleteCourseWithContents = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
+    const { courseId } = req.params;
+    const session = await mongoose_1.default.startSession();
+    session.startTransaction();
+    try {
+        const course = await course_model_1.default.findById(courseId).session(session).lean();
+        if (!course) {
+            throw AppError_1.AppError.notFound("Course not found.");
+        }
+        const modules = await courseModule_model_1.default.find({ course: courseId })
+            .session(session)
+            .lean();
+        const moduleIds = modules.map((m) => m._id);
+        const deletionPromises = [];
+        if (moduleIds.length > 0) {
+            deletionPromises.push(courseVideo_model_1.default.deleteMany({ module: { $in: moduleIds } }).session(session));
+        }
+        deletionPromises.push(material_model_2.default.deleteMany({
+            $or: [{ module: { $in: moduleIds } }, { course: courseId }],
+        }).session(session));
+        deletionPromises.push(quiz_model_1.default.deleteMany({
+            $or: [{ module: { $in: moduleIds } }, { course: courseId }],
+        }).session(session));
+        await Promise.all(deletionPromises);
+        if (moduleIds.length > 0) {
+            await courseModule_model_1.default.deleteMany({ _id: { $in: moduleIds } }).session(session);
+        }
+        await course_model_1.default.findByIdAndDelete(courseId).session(session);
+        await session.commitTransaction();
+        res.status(204).send();
+    }
+    catch (error) {
+        await session.abortTransaction();
+        throw error;
+    }
+    finally {
+        session.endSession();
+    }
 });
 //# sourceMappingURL=course.controller.js.map

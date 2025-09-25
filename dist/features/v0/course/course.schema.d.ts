@@ -357,10 +357,11 @@ export declare const createCourseWithContentSchema: z.ZodEffects<z.ZodObject<{
         thumbnailUrl: z.ZodOptional<z.ZodString>;
         videoThumbnailUrl: z.ZodOptional<z.ZodString>;
         price: z.ZodNumber;
+        discountPercentage: z.ZodDefault<z.ZodNumber>;
         duration: z.ZodNumber;
         rating: z.ZodOptional<z.ZodNumber>;
         instructor: z.ZodArray<z.ZodString, "atleastone">;
-        category: z.ZodArray<z.ZodString, "atleastone">;
+        category: z.ZodEffects<z.ZodArray<z.ZodString, "atleastone">, [string, ...string[]], unknown>;
         modules: z.ZodOptional<z.ZodArray<z.ZodEffects<z.ZodObject<{
             title: z.ZodOptional<z.ZodString>;
             order: z.ZodNumber;
@@ -673,6 +674,7 @@ export declare const createCourseWithContentSchema: z.ZodEffects<z.ZodObject<{
     }, "strip", z.ZodTypeAny, {
         title: string;
         price: number;
+        discountPercentage: number;
         duration: number;
         instructor: [string, ...string[]];
         category: [string, ...string[]];
@@ -738,11 +740,12 @@ export declare const createCourseWithContentSchema: z.ZodEffects<z.ZodObject<{
         price: number;
         duration: number;
         instructor: [string, ...string[]];
-        category: [string, ...string[]];
         description?: string | undefined;
         thumbnailUrl?: string | undefined;
         videoThumbnailUrl?: string | undefined;
+        discountPercentage?: number | undefined;
         rating?: number | undefined;
+        category?: unknown;
         modules?: {
             order: number;
             title?: string | undefined;
@@ -801,6 +804,7 @@ export declare const createCourseWithContentSchema: z.ZodEffects<z.ZodObject<{
     body: {
         title: string;
         price: number;
+        discountPercentage: number;
         duration: number;
         instructor: [string, ...string[]];
         category: [string, ...string[]];
@@ -868,11 +872,12 @@ export declare const createCourseWithContentSchema: z.ZodEffects<z.ZodObject<{
         price: number;
         duration: number;
         instructor: [string, ...string[]];
-        category: [string, ...string[]];
         description?: string | undefined;
         thumbnailUrl?: string | undefined;
         videoThumbnailUrl?: string | undefined;
+        discountPercentage?: number | undefined;
         rating?: number | undefined;
+        category?: unknown;
         modules?: {
             order: number;
             title?: string | undefined;
@@ -931,6 +936,7 @@ export declare const createCourseWithContentSchema: z.ZodEffects<z.ZodObject<{
     body: {
         title: string;
         price: number;
+        discountPercentage: number;
         duration: number;
         instructor: [string, ...string[]];
         category: [string, ...string[]];
@@ -998,11 +1004,12 @@ export declare const createCourseWithContentSchema: z.ZodEffects<z.ZodObject<{
         price: number;
         duration: number;
         instructor: [string, ...string[]];
-        category: [string, ...string[]];
         description?: string | undefined;
         thumbnailUrl?: string | undefined;
         videoThumbnailUrl?: string | undefined;
+        discountPercentage?: number | undefined;
         rating?: number | undefined;
+        category?: unknown;
         modules?: {
             order: number;
             title?: string | undefined;
@@ -1065,10 +1072,11 @@ export declare const createManyCoursesWithContentSchema: z.ZodObject<{
         thumbnailUrl: z.ZodOptional<z.ZodString>;
         videoThumbnailUrl: z.ZodOptional<z.ZodString>;
         price: z.ZodNumber;
+        discountPercentage: z.ZodDefault<z.ZodNumber>;
         duration: z.ZodNumber;
         rating: z.ZodOptional<z.ZodNumber>;
         instructor: z.ZodArray<z.ZodString, "atleastone">;
-        category: z.ZodArray<z.ZodString, "atleastone">;
+        category: z.ZodEffects<z.ZodArray<z.ZodString, "atleastone">, [string, ...string[]], unknown>;
         modules: z.ZodOptional<z.ZodArray<z.ZodEffects<z.ZodObject<{
             title: z.ZodOptional<z.ZodString>;
             order: z.ZodNumber;
@@ -1381,6 +1389,7 @@ export declare const createManyCoursesWithContentSchema: z.ZodObject<{
     }, "strip", z.ZodTypeAny, {
         title: string;
         price: number;
+        discountPercentage: number;
         duration: number;
         instructor: [string, ...string[]];
         category: [string, ...string[]];
@@ -1446,11 +1455,12 @@ export declare const createManyCoursesWithContentSchema: z.ZodObject<{
         price: number;
         duration: number;
         instructor: [string, ...string[]];
-        category: [string, ...string[]];
         description?: string | undefined;
         thumbnailUrl?: string | undefined;
         videoThumbnailUrl?: string | undefined;
+        discountPercentage?: number | undefined;
         rating?: number | undefined;
+        category?: unknown;
         modules?: {
             order: number;
             title?: string | undefined;
@@ -1507,6 +1517,7 @@ export declare const createManyCoursesWithContentSchema: z.ZodObject<{
     }>, "atleastone">, [{
         title: string;
         price: number;
+        discountPercentage: number;
         duration: number;
         instructor: [string, ...string[]];
         category: [string, ...string[]];
@@ -1570,6 +1581,7 @@ export declare const createManyCoursesWithContentSchema: z.ZodObject<{
     }, ...{
         title: string;
         price: number;
+        discountPercentage: number;
         duration: number;
         instructor: [string, ...string[]];
         category: [string, ...string[]];
@@ -1635,11 +1647,12 @@ export declare const createManyCoursesWithContentSchema: z.ZodObject<{
         price: number;
         duration: number;
         instructor: [string, ...string[]];
-        category: [string, ...string[]];
         description?: string | undefined;
         thumbnailUrl?: string | undefined;
         videoThumbnailUrl?: string | undefined;
+        discountPercentage?: number | undefined;
         rating?: number | undefined;
+        category?: unknown;
         modules?: {
             order: number;
             title?: string | undefined;
@@ -1698,11 +1711,12 @@ export declare const createManyCoursesWithContentSchema: z.ZodObject<{
         price: number;
         duration: number;
         instructor: [string, ...string[]];
-        category: [string, ...string[]];
         description?: string | undefined;
         thumbnailUrl?: string | undefined;
         videoThumbnailUrl?: string | undefined;
+        discountPercentage?: number | undefined;
         rating?: number | undefined;
+        category?: unknown;
         modules?: {
             order: number;
             title?: string | undefined;
@@ -1761,6 +1775,7 @@ export declare const createManyCoursesWithContentSchema: z.ZodObject<{
     body: [{
         title: string;
         price: number;
+        discountPercentage: number;
         duration: number;
         instructor: [string, ...string[]];
         category: [string, ...string[]];
@@ -1824,6 +1839,7 @@ export declare const createManyCoursesWithContentSchema: z.ZodObject<{
     }, ...{
         title: string;
         price: number;
+        discountPercentage: number;
         duration: number;
         instructor: [string, ...string[]];
         category: [string, ...string[]];
@@ -1891,11 +1907,12 @@ export declare const createManyCoursesWithContentSchema: z.ZodObject<{
         price: number;
         duration: number;
         instructor: [string, ...string[]];
-        category: [string, ...string[]];
         description?: string | undefined;
         thumbnailUrl?: string | undefined;
         videoThumbnailUrl?: string | undefined;
+        discountPercentage?: number | undefined;
         rating?: number | undefined;
+        category?: unknown;
         modules?: {
             order: number;
             title?: string | undefined;
@@ -1954,11 +1971,12 @@ export declare const createManyCoursesWithContentSchema: z.ZodObject<{
         price: number;
         duration: number;
         instructor: [string, ...string[]];
-        category: [string, ...string[]];
         description?: string | undefined;
         thumbnailUrl?: string | undefined;
         videoThumbnailUrl?: string | undefined;
+        discountPercentage?: number | undefined;
         rating?: number | undefined;
+        category?: unknown;
         modules?: {
             order: number;
             title?: string | undefined;
@@ -2099,17 +2117,19 @@ export declare const updateCourseSchema: z.ZodObject<{
         description: z.ZodOptional<z.ZodString>;
         thumbnailUrl: z.ZodOptional<z.ZodString>;
         price: z.ZodOptional<z.ZodNumber>;
+        discountPercentage: z.ZodOptional<z.ZodNumber>;
         duration: z.ZodOptional<z.ZodNumber>;
         rating: z.ZodOptional<z.ZodNumber>;
         isActive: z.ZodOptional<z.ZodBoolean>;
         instructor: z.ZodOptional<z.ZodArray<z.ZodString, "atleastone">>;
-        category: z.ZodOptional<z.ZodArray<z.ZodString, "atleastone">>;
+        category: z.ZodOptional<z.ZodEffects<z.ZodArray<z.ZodString, "atleastone">, [string, ...string[]], unknown>>;
     }, "strip", z.ZodTypeAny, {
         isActive?: boolean | undefined;
         description?: string | undefined;
         title?: string | undefined;
         thumbnailUrl?: string | undefined;
         price?: number | undefined;
+        discountPercentage?: number | undefined;
         duration?: number | undefined;
         rating?: number | undefined;
         instructor?: [string, ...string[]] | undefined;
@@ -2120,16 +2140,18 @@ export declare const updateCourseSchema: z.ZodObject<{
         title?: string | undefined;
         thumbnailUrl?: string | undefined;
         price?: number | undefined;
+        discountPercentage?: number | undefined;
         duration?: number | undefined;
         rating?: number | undefined;
         instructor?: [string, ...string[]] | undefined;
-        category?: [string, ...string[]] | undefined;
+        category?: unknown;
     }>, {
         isActive?: boolean | undefined;
         description?: string | undefined;
         title?: string | undefined;
         thumbnailUrl?: string | undefined;
         price?: number | undefined;
+        discountPercentage?: number | undefined;
         duration?: number | undefined;
         rating?: number | undefined;
         instructor?: [string, ...string[]] | undefined;
@@ -2140,16 +2162,18 @@ export declare const updateCourseSchema: z.ZodObject<{
         title?: string | undefined;
         thumbnailUrl?: string | undefined;
         price?: number | undefined;
+        discountPercentage?: number | undefined;
         duration?: number | undefined;
         rating?: number | undefined;
         instructor?: [string, ...string[]] | undefined;
-        category?: [string, ...string[]] | undefined;
+        category?: unknown;
     }>, {
         isActive?: boolean | undefined;
         description?: string | undefined;
         title?: string | undefined;
         thumbnailUrl?: string | undefined;
         price?: number | undefined;
+        discountPercentage?: number | undefined;
         duration?: number | undefined;
         rating?: number | undefined;
         instructor?: [string, ...string[]] | undefined;
@@ -2160,16 +2184,18 @@ export declare const updateCourseSchema: z.ZodObject<{
         title?: string | undefined;
         thumbnailUrl?: string | undefined;
         price?: number | undefined;
+        discountPercentage?: number | undefined;
         duration?: number | undefined;
         rating?: number | undefined;
         instructor?: [string, ...string[]] | undefined;
-        category?: [string, ...string[]] | undefined;
+        category?: unknown;
     }>, {
         isActive?: boolean | undefined;
         description?: string | undefined;
         title?: string | undefined;
         thumbnailUrl?: string | undefined;
         price?: number | undefined;
+        discountPercentage?: number | undefined;
         duration?: number | undefined;
         rating?: number | undefined;
         instructor?: [string, ...string[]] | undefined;
@@ -2180,10 +2206,11 @@ export declare const updateCourseSchema: z.ZodObject<{
         title?: string | undefined;
         thumbnailUrl?: string | undefined;
         price?: number | undefined;
+        discountPercentage?: number | undefined;
         duration?: number | undefined;
         rating?: number | undefined;
         instructor?: [string, ...string[]] | undefined;
-        category?: [string, ...string[]] | undefined;
+        category?: unknown;
     }>;
 }, "strip", z.ZodTypeAny, {
     params: {
@@ -2195,6 +2222,7 @@ export declare const updateCourseSchema: z.ZodObject<{
         title?: string | undefined;
         thumbnailUrl?: string | undefined;
         price?: number | undefined;
+        discountPercentage?: number | undefined;
         duration?: number | undefined;
         rating?: number | undefined;
         instructor?: [string, ...string[]] | undefined;
@@ -2210,10 +2238,11 @@ export declare const updateCourseSchema: z.ZodObject<{
         title?: string | undefined;
         thumbnailUrl?: string | undefined;
         price?: number | undefined;
+        discountPercentage?: number | undefined;
         duration?: number | undefined;
         rating?: number | undefined;
         instructor?: [string, ...string[]] | undefined;
-        category?: [string, ...string[]] | undefined;
+        category?: unknown;
     };
 }>;
 export type CreateCourseRequest = z.infer<typeof createCourseWithContentSchema>["body"];
@@ -2227,5 +2256,665 @@ export type GetAllCoursesQuery = z.infer<typeof getAllCoursesSchema>["query"];
 export type GetCourseParams = z.infer<typeof getCourseSchema>["params"];
 export type GetCourseQuery = z.infer<typeof getCourseSchema>["query"];
 export type UpdateCourseBody = z.infer<typeof updateCourseSchema>["body"];
+export declare const updateCourseContentSchema: z.ZodObject<{
+    params: z.ZodObject<{
+        courseId: z.ZodString;
+    }, "strip", z.ZodTypeAny, {
+        courseId: string;
+    }, {
+        courseId: string;
+    }>;
+    body: z.ZodEffects<z.ZodObject<{
+        modules: z.ZodOptional<z.ZodArray<z.ZodObject<{
+            _id: z.ZodOptional<z.ZodString>;
+        } & {
+            title: z.ZodOptional<z.ZodString>;
+            order: z.ZodNumber;
+            videos: z.ZodOptional<z.ZodArray<z.ZodObject<{
+                _id: z.ZodOptional<z.ZodString>;
+            } & {
+                title: z.ZodOptional<z.ZodString>;
+                description: z.ZodOptional<z.ZodString>;
+                url: z.ZodString;
+                order: z.ZodNumber;
+                isAccessedByDefault: z.ZodDefault<z.ZodBoolean>;
+            }, "strip", z.ZodTypeAny, {
+                order: number;
+                isAccessedByDefault: boolean;
+                url: string;
+                _id?: string | undefined;
+                description?: string | undefined;
+                title?: string | undefined;
+            }, {
+                order: number;
+                url: string;
+                _id?: string | undefined;
+                description?: string | undefined;
+                title?: string | undefined;
+                isAccessedByDefault?: boolean | undefined;
+            }>, "many">>;
+            materials: z.ZodOptional<z.ZodArray<z.ZodObject<{
+                _id: z.ZodOptional<z.ZodString>;
+            } & {
+                title: z.ZodString;
+                description: z.ZodOptional<z.ZodString>;
+                url: z.ZodString;
+                order: z.ZodNumber;
+                isAccessedByDefault: z.ZodDefault<z.ZodBoolean>;
+            } & {
+                materialType: z.ZodDefault<z.ZodLiteral<"ModuleMaterial">>;
+            }, "strip", z.ZodTypeAny, {
+                title: string;
+                order: number;
+                isAccessedByDefault: boolean;
+                url: string;
+                materialType: "ModuleMaterial";
+                _id?: string | undefined;
+                description?: string | undefined;
+            }, {
+                title: string;
+                order: number;
+                url: string;
+                _id?: string | undefined;
+                description?: string | undefined;
+                isAccessedByDefault?: boolean | undefined;
+                materialType?: "ModuleMaterial" | undefined;
+            }>, "many">>;
+            quizzes: z.ZodOptional<z.ZodArray<z.ZodObject<{
+                _id: z.ZodOptional<z.ZodString>;
+            } & {
+                title: z.ZodString;
+                timeLimit: z.ZodOptional<z.ZodNumber>;
+                isAccessedByDefault: z.ZodDefault<z.ZodBoolean>;
+                order: z.ZodNumber;
+                questions: z.ZodOptional<z.ZodArray<z.ZodEffects<z.ZodObject<{
+                    question: z.ZodString;
+                    options: z.ZodArray<z.ZodString, "many">;
+                    correctAns: z.ZodString;
+                    order: z.ZodNumber;
+                }, "strip", z.ZodTypeAny, {
+                    options: string[];
+                    order: number;
+                    question: string;
+                    correctAns: string;
+                }, {
+                    options: string[];
+                    order: number;
+                    question: string;
+                    correctAns: string;
+                }>, {
+                    options: string[];
+                    order: number;
+                    question: string;
+                    correctAns: string;
+                }, {
+                    options: string[];
+                    order: number;
+                    question: string;
+                    correctAns: string;
+                }>, "many">>;
+            } & {
+                quizType: z.ZodDefault<z.ZodLiteral<"ModuleQuiz">>;
+            }, "strip", z.ZodTypeAny, {
+                title: string;
+                order: number;
+                isAccessedByDefault: boolean;
+                quizType: "ModuleQuiz";
+                _id?: string | undefined;
+                timeLimit?: number | undefined;
+                questions?: {
+                    options: string[];
+                    order: number;
+                    question: string;
+                    correctAns: string;
+                }[] | undefined;
+            }, {
+                title: string;
+                order: number;
+                _id?: string | undefined;
+                timeLimit?: number | undefined;
+                isAccessedByDefault?: boolean | undefined;
+                questions?: {
+                    options: string[];
+                    order: number;
+                    question: string;
+                    correctAns: string;
+                }[] | undefined;
+                quizType?: "ModuleQuiz" | undefined;
+            }>, "many">>;
+        }, "strip", z.ZodTypeAny, {
+            order: number;
+            _id?: string | undefined;
+            title?: string | undefined;
+            videos?: {
+                order: number;
+                isAccessedByDefault: boolean;
+                url: string;
+                _id?: string | undefined;
+                description?: string | undefined;
+                title?: string | undefined;
+            }[] | undefined;
+            materials?: {
+                title: string;
+                order: number;
+                isAccessedByDefault: boolean;
+                url: string;
+                materialType: "ModuleMaterial";
+                _id?: string | undefined;
+                description?: string | undefined;
+            }[] | undefined;
+            quizzes?: {
+                title: string;
+                order: number;
+                isAccessedByDefault: boolean;
+                quizType: "ModuleQuiz";
+                _id?: string | undefined;
+                timeLimit?: number | undefined;
+                questions?: {
+                    options: string[];
+                    order: number;
+                    question: string;
+                    correctAns: string;
+                }[] | undefined;
+            }[] | undefined;
+        }, {
+            order: number;
+            _id?: string | undefined;
+            title?: string | undefined;
+            videos?: {
+                order: number;
+                url: string;
+                _id?: string | undefined;
+                description?: string | undefined;
+                title?: string | undefined;
+                isAccessedByDefault?: boolean | undefined;
+            }[] | undefined;
+            materials?: {
+                title: string;
+                order: number;
+                url: string;
+                _id?: string | undefined;
+                description?: string | undefined;
+                isAccessedByDefault?: boolean | undefined;
+                materialType?: "ModuleMaterial" | undefined;
+            }[] | undefined;
+            quizzes?: {
+                title: string;
+                order: number;
+                _id?: string | undefined;
+                timeLimit?: number | undefined;
+                isAccessedByDefault?: boolean | undefined;
+                questions?: {
+                    options: string[];
+                    order: number;
+                    question: string;
+                    correctAns: string;
+                }[] | undefined;
+                quizType?: "ModuleQuiz" | undefined;
+            }[] | undefined;
+        }>, "many">>;
+        finalQuizzes: z.ZodOptional<z.ZodArray<z.ZodObject<{
+            _id: z.ZodOptional<z.ZodString>;
+        } & {
+            title: z.ZodString;
+            timeLimit: z.ZodOptional<z.ZodNumber>;
+            isAccessedByDefault: z.ZodDefault<z.ZodBoolean>;
+            order: z.ZodNumber;
+            questions: z.ZodOptional<z.ZodArray<z.ZodEffects<z.ZodObject<{
+                question: z.ZodString;
+                options: z.ZodArray<z.ZodString, "many">;
+                correctAns: z.ZodString;
+                order: z.ZodNumber;
+            }, "strip", z.ZodTypeAny, {
+                options: string[];
+                order: number;
+                question: string;
+                correctAns: string;
+            }, {
+                options: string[];
+                order: number;
+                question: string;
+                correctAns: string;
+            }>, {
+                options: string[];
+                order: number;
+                question: string;
+                correctAns: string;
+            }, {
+                options: string[];
+                order: number;
+                question: string;
+                correctAns: string;
+            }>, "many">>;
+        } & {
+            quizType: z.ZodDefault<z.ZodLiteral<"FinalQuiz">>;
+        }, "strip", z.ZodTypeAny, {
+            title: string;
+            order: number;
+            isAccessedByDefault: boolean;
+            quizType: "FinalQuiz";
+            _id?: string | undefined;
+            timeLimit?: number | undefined;
+            questions?: {
+                options: string[];
+                order: number;
+                question: string;
+                correctAns: string;
+            }[] | undefined;
+        }, {
+            title: string;
+            order: number;
+            _id?: string | undefined;
+            timeLimit?: number | undefined;
+            isAccessedByDefault?: boolean | undefined;
+            questions?: {
+                options: string[];
+                order: number;
+                question: string;
+                correctAns: string;
+            }[] | undefined;
+            quizType?: "FinalQuiz" | undefined;
+        }>, "many">>;
+        finalMaterials: z.ZodOptional<z.ZodArray<z.ZodObject<{
+            _id: z.ZodOptional<z.ZodString>;
+        } & {
+            title: z.ZodString;
+            description: z.ZodOptional<z.ZodString>;
+            url: z.ZodString;
+            order: z.ZodNumber;
+            isAccessedByDefault: z.ZodDefault<z.ZodBoolean>;
+        } & {
+            materialType: z.ZodDefault<z.ZodLiteral<"FinalMaterial">>;
+        }, "strip", z.ZodTypeAny, {
+            title: string;
+            order: number;
+            isAccessedByDefault: boolean;
+            url: string;
+            materialType: "FinalMaterial";
+            _id?: string | undefined;
+            description?: string | undefined;
+        }, {
+            title: string;
+            order: number;
+            url: string;
+            _id?: string | undefined;
+            description?: string | undefined;
+            isAccessedByDefault?: boolean | undefined;
+            materialType?: "FinalMaterial" | undefined;
+        }>, "many">>;
+    }, "strip", z.ZodTypeAny, {
+        modules?: {
+            order: number;
+            _id?: string | undefined;
+            title?: string | undefined;
+            videos?: {
+                order: number;
+                isAccessedByDefault: boolean;
+                url: string;
+                _id?: string | undefined;
+                description?: string | undefined;
+                title?: string | undefined;
+            }[] | undefined;
+            materials?: {
+                title: string;
+                order: number;
+                isAccessedByDefault: boolean;
+                url: string;
+                materialType: "ModuleMaterial";
+                _id?: string | undefined;
+                description?: string | undefined;
+            }[] | undefined;
+            quizzes?: {
+                title: string;
+                order: number;
+                isAccessedByDefault: boolean;
+                quizType: "ModuleQuiz";
+                _id?: string | undefined;
+                timeLimit?: number | undefined;
+                questions?: {
+                    options: string[];
+                    order: number;
+                    question: string;
+                    correctAns: string;
+                }[] | undefined;
+            }[] | undefined;
+        }[] | undefined;
+        finalQuizzes?: {
+            title: string;
+            order: number;
+            isAccessedByDefault: boolean;
+            quizType: "FinalQuiz";
+            _id?: string | undefined;
+            timeLimit?: number | undefined;
+            questions?: {
+                options: string[];
+                order: number;
+                question: string;
+                correctAns: string;
+            }[] | undefined;
+        }[] | undefined;
+        finalMaterials?: {
+            title: string;
+            order: number;
+            isAccessedByDefault: boolean;
+            url: string;
+            materialType: "FinalMaterial";
+            _id?: string | undefined;
+            description?: string | undefined;
+        }[] | undefined;
+    }, {
+        modules?: {
+            order: number;
+            _id?: string | undefined;
+            title?: string | undefined;
+            videos?: {
+                order: number;
+                url: string;
+                _id?: string | undefined;
+                description?: string | undefined;
+                title?: string | undefined;
+                isAccessedByDefault?: boolean | undefined;
+            }[] | undefined;
+            materials?: {
+                title: string;
+                order: number;
+                url: string;
+                _id?: string | undefined;
+                description?: string | undefined;
+                isAccessedByDefault?: boolean | undefined;
+                materialType?: "ModuleMaterial" | undefined;
+            }[] | undefined;
+            quizzes?: {
+                title: string;
+                order: number;
+                _id?: string | undefined;
+                timeLimit?: number | undefined;
+                isAccessedByDefault?: boolean | undefined;
+                questions?: {
+                    options: string[];
+                    order: number;
+                    question: string;
+                    correctAns: string;
+                }[] | undefined;
+                quizType?: "ModuleQuiz" | undefined;
+            }[] | undefined;
+        }[] | undefined;
+        finalQuizzes?: {
+            title: string;
+            order: number;
+            _id?: string | undefined;
+            timeLimit?: number | undefined;
+            isAccessedByDefault?: boolean | undefined;
+            questions?: {
+                options: string[];
+                order: number;
+                question: string;
+                correctAns: string;
+            }[] | undefined;
+            quizType?: "FinalQuiz" | undefined;
+        }[] | undefined;
+        finalMaterials?: {
+            title: string;
+            order: number;
+            url: string;
+            _id?: string | undefined;
+            description?: string | undefined;
+            isAccessedByDefault?: boolean | undefined;
+            materialType?: "FinalMaterial" | undefined;
+        }[] | undefined;
+    }>, {
+        modules?: {
+            order: number;
+            _id?: string | undefined;
+            title?: string | undefined;
+            videos?: {
+                order: number;
+                isAccessedByDefault: boolean;
+                url: string;
+                _id?: string | undefined;
+                description?: string | undefined;
+                title?: string | undefined;
+            }[] | undefined;
+            materials?: {
+                title: string;
+                order: number;
+                isAccessedByDefault: boolean;
+                url: string;
+                materialType: "ModuleMaterial";
+                _id?: string | undefined;
+                description?: string | undefined;
+            }[] | undefined;
+            quizzes?: {
+                title: string;
+                order: number;
+                isAccessedByDefault: boolean;
+                quizType: "ModuleQuiz";
+                _id?: string | undefined;
+                timeLimit?: number | undefined;
+                questions?: {
+                    options: string[];
+                    order: number;
+                    question: string;
+                    correctAns: string;
+                }[] | undefined;
+            }[] | undefined;
+        }[] | undefined;
+        finalQuizzes?: {
+            title: string;
+            order: number;
+            isAccessedByDefault: boolean;
+            quizType: "FinalQuiz";
+            _id?: string | undefined;
+            timeLimit?: number | undefined;
+            questions?: {
+                options: string[];
+                order: number;
+                question: string;
+                correctAns: string;
+            }[] | undefined;
+        }[] | undefined;
+        finalMaterials?: {
+            title: string;
+            order: number;
+            isAccessedByDefault: boolean;
+            url: string;
+            materialType: "FinalMaterial";
+            _id?: string | undefined;
+            description?: string | undefined;
+        }[] | undefined;
+    }, {
+        modules?: {
+            order: number;
+            _id?: string | undefined;
+            title?: string | undefined;
+            videos?: {
+                order: number;
+                url: string;
+                _id?: string | undefined;
+                description?: string | undefined;
+                title?: string | undefined;
+                isAccessedByDefault?: boolean | undefined;
+            }[] | undefined;
+            materials?: {
+                title: string;
+                order: number;
+                url: string;
+                _id?: string | undefined;
+                description?: string | undefined;
+                isAccessedByDefault?: boolean | undefined;
+                materialType?: "ModuleMaterial" | undefined;
+            }[] | undefined;
+            quizzes?: {
+                title: string;
+                order: number;
+                _id?: string | undefined;
+                timeLimit?: number | undefined;
+                isAccessedByDefault?: boolean | undefined;
+                questions?: {
+                    options: string[];
+                    order: number;
+                    question: string;
+                    correctAns: string;
+                }[] | undefined;
+                quizType?: "ModuleQuiz" | undefined;
+            }[] | undefined;
+        }[] | undefined;
+        finalQuizzes?: {
+            title: string;
+            order: number;
+            _id?: string | undefined;
+            timeLimit?: number | undefined;
+            isAccessedByDefault?: boolean | undefined;
+            questions?: {
+                options: string[];
+                order: number;
+                question: string;
+                correctAns: string;
+            }[] | undefined;
+            quizType?: "FinalQuiz" | undefined;
+        }[] | undefined;
+        finalMaterials?: {
+            title: string;
+            order: number;
+            url: string;
+            _id?: string | undefined;
+            description?: string | undefined;
+            isAccessedByDefault?: boolean | undefined;
+            materialType?: "FinalMaterial" | undefined;
+        }[] | undefined;
+    }>;
+}, "strip", z.ZodTypeAny, {
+    params: {
+        courseId: string;
+    };
+    body: {
+        modules?: {
+            order: number;
+            _id?: string | undefined;
+            title?: string | undefined;
+            videos?: {
+                order: number;
+                isAccessedByDefault: boolean;
+                url: string;
+                _id?: string | undefined;
+                description?: string | undefined;
+                title?: string | undefined;
+            }[] | undefined;
+            materials?: {
+                title: string;
+                order: number;
+                isAccessedByDefault: boolean;
+                url: string;
+                materialType: "ModuleMaterial";
+                _id?: string | undefined;
+                description?: string | undefined;
+            }[] | undefined;
+            quizzes?: {
+                title: string;
+                order: number;
+                isAccessedByDefault: boolean;
+                quizType: "ModuleQuiz";
+                _id?: string | undefined;
+                timeLimit?: number | undefined;
+                questions?: {
+                    options: string[];
+                    order: number;
+                    question: string;
+                    correctAns: string;
+                }[] | undefined;
+            }[] | undefined;
+        }[] | undefined;
+        finalQuizzes?: {
+            title: string;
+            order: number;
+            isAccessedByDefault: boolean;
+            quizType: "FinalQuiz";
+            _id?: string | undefined;
+            timeLimit?: number | undefined;
+            questions?: {
+                options: string[];
+                order: number;
+                question: string;
+                correctAns: string;
+            }[] | undefined;
+        }[] | undefined;
+        finalMaterials?: {
+            title: string;
+            order: number;
+            isAccessedByDefault: boolean;
+            url: string;
+            materialType: "FinalMaterial";
+            _id?: string | undefined;
+            description?: string | undefined;
+        }[] | undefined;
+    };
+}, {
+    params: {
+        courseId: string;
+    };
+    body: {
+        modules?: {
+            order: number;
+            _id?: string | undefined;
+            title?: string | undefined;
+            videos?: {
+                order: number;
+                url: string;
+                _id?: string | undefined;
+                description?: string | undefined;
+                title?: string | undefined;
+                isAccessedByDefault?: boolean | undefined;
+            }[] | undefined;
+            materials?: {
+                title: string;
+                order: number;
+                url: string;
+                _id?: string | undefined;
+                description?: string | undefined;
+                isAccessedByDefault?: boolean | undefined;
+                materialType?: "ModuleMaterial" | undefined;
+            }[] | undefined;
+            quizzes?: {
+                title: string;
+                order: number;
+                _id?: string | undefined;
+                timeLimit?: number | undefined;
+                isAccessedByDefault?: boolean | undefined;
+                questions?: {
+                    options: string[];
+                    order: number;
+                    question: string;
+                    correctAns: string;
+                }[] | undefined;
+                quizType?: "ModuleQuiz" | undefined;
+            }[] | undefined;
+        }[] | undefined;
+        finalQuizzes?: {
+            title: string;
+            order: number;
+            _id?: string | undefined;
+            timeLimit?: number | undefined;
+            isAccessedByDefault?: boolean | undefined;
+            questions?: {
+                options: string[];
+                order: number;
+                question: string;
+                correctAns: string;
+            }[] | undefined;
+            quizType?: "FinalQuiz" | undefined;
+        }[] | undefined;
+        finalMaterials?: {
+            title: string;
+            order: number;
+            url: string;
+            _id?: string | undefined;
+            description?: string | undefined;
+            isAccessedByDefault?: boolean | undefined;
+            materialType?: "FinalMaterial" | undefined;
+        }[] | undefined;
+    };
+}>;
+export type UpdateCourseContentParams = z.infer<typeof updateCourseContentSchema>["params"];
+export type UpdateCourseContentBody = z.infer<typeof updateCourseContentSchema>["body"];
 export {};
 //# sourceMappingURL=course.schema.d.ts.map

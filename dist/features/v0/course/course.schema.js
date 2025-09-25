@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateCourseSchema = exports.getCourseSchema = exports.getAllCoursesSchema = exports.createManyCoursesWithContentSchema = exports.createCourseWithContentSchema = void 0;
+exports.updateCourseContentSchema = exports.updateCourseSchema = exports.getCourseSchema = exports.getAllCoursesSchema = exports.createManyCoursesWithContentSchema = exports.createCourseWithContentSchema = void 0;
 const zod_1 = require("zod");
 const common_schema_1 = require("../../../schemas/common.schema");
 const instructor_model_1 = __importDefault(require("../../../models/instructor.model"));
@@ -64,14 +64,22 @@ const singleCourseWithContentSchema = zod_1.z.object({
     thumbnailUrl: zod_1.z.string().url("Thumbnail must be a valid URL").optional(),
     videoThumbnailUrl: zod_1.z.string().url("Thumbnail must be a valid URL").optional(),
     price: zod_1.z.number({ required_error: "Price is required" }).min(0),
+    discountPercentage: zod_1.z
+        .number({ required_error: "Discount percent is required" })
+        .min(0)
+        .max(100)
+        .default(0),
     duration: zod_1.z.number({ required_error: "Course duration is required" }).min(0),
     rating: zod_1.z.number().min(0).max(5).optional(),
     instructor: zod_1.z
         .array(common_schema_1.objectIdSchema)
         .nonempty("At least one instructor is required."),
-    category: zod_1.z
-        .array(common_schema_1.objectIdSchema)
-        .nonempty("At least one category is required."),
+    category: zod_1.z.preprocess((arg) => {
+        if (typeof arg === "string") {
+            return [arg];
+        }
+        return arg;
+    }, zod_1.z.array(common_schema_1.objectIdSchema).nonempty("At least one category is required.")),
     modules: zod_1.z.array(moduleSchema).optional(),
     finalMaterials: zod_1.z.array(finalMaterialContentSchema).optional(),
     finalQuizzes: zod_1.z.array(finalQuizContentSchema).optional(),
@@ -163,11 +171,23 @@ exports.updateCourseSchema = zod_1.z.object({
         description: zod_1.z.string().optional(),
         thumbnailUrl: zod_1.z.string().url("Must be a valid URL").optional(),
         price: zod_1.z.number().min(0).optional(),
+        discountPercentage: zod_1.z
+            .number({ required_error: "Discount percent is required" })
+            .min(0)
+            .max(100)
+            .optional(),
         duration: zod_1.z.number().min(0).optional(),
         rating: zod_1.z.number().min(0).max(5).optional(),
         isActive: zod_1.z.boolean().optional(),
         instructor: zod_1.z.array(common_schema_1.objectIdSchema).nonempty().optional(),
-        category: zod_1.z.array(common_schema_1.objectIdSchema).nonempty().optional(),
+        category: zod_1.z
+            .preprocess((arg) => {
+            if (typeof arg === "string") {
+                return [arg];
+            }
+            return arg;
+        }, zod_1.z.array(common_schema_1.objectIdSchema).nonempty("At least one category is required."))
+            .optional(),
     })
         .refine((data) => Object.keys(data).length > 0, {
         message: "Update body cannot be empty.",
@@ -193,5 +213,64 @@ exports.updateCourseSchema = zod_1.z.object({
         });
         return count === uniqueIds.length;
     }, { message: "One or more category IDs are invalid.", path: ["category"] }),
+});
+const contentItemSchema = zod_1.z.object({
+    _id: common_schema_1.objectIdSchema.optional(),
+});
+const videoUpdateSchema = contentItemSchema.extend({
+    title: zod_1.z.string().optional(),
+    description: zod_1.z.string().optional(),
+    url: zod_1.z.string({ required_error: "Video URL is required" }).url(),
+    order: zod_1.z.number({ required_error: "Video order is required" }),
+    isAccessedByDefault: zod_1.z.boolean().default(false),
+});
+const materialUpdateBaseSchema = contentItemSchema.extend({
+    title: zod_1.z.string({ required_error: "Material title is required" }),
+    description: zod_1.z.string().optional(),
+    url: zod_1.z.string({ required_error: "Material URL is required" }).url(),
+    order: zod_1.z.number({ required_error: "Material order is required" }),
+    isAccessedByDefault: zod_1.z.boolean().default(false),
+});
+const moduleMaterialUpdateSchema = materialUpdateBaseSchema.extend({
+    materialType: zod_1.z.literal("ModuleMaterial").default("ModuleMaterial"),
+});
+const finalMaterialUpdateSchema = materialUpdateBaseSchema.extend({
+    materialType: zod_1.z.literal("FinalMaterial").default("FinalMaterial"),
+});
+const quizUpdateBaseSchema = contentItemSchema.extend({
+    title: zod_1.z.string({ required_error: "Title is required" }),
+    timeLimit: zod_1.z.number().optional(),
+    isAccessedByDefault: zod_1.z.boolean().default(false),
+    order: zod_1.z.number({ required_error: "Order is required" }),
+    questions: zod_1.z.array(quiz_zod_1.questionSchema).optional(),
+});
+const moduleQuizUpdateSchema = quizUpdateBaseSchema.extend({
+    quizType: zod_1.z.literal("ModuleQuiz").default("ModuleQuiz"),
+});
+const finalQuizUpdateSchema = quizUpdateBaseSchema.extend({
+    quizType: zod_1.z.literal("FinalQuiz").default("FinalQuiz"),
+});
+const moduleWithContentUpdateSchema = contentItemSchema.extend({
+    title: zod_1.z.string().optional(),
+    order: zod_1.z.number({ required_error: "Module order is required" }),
+    videos: zod_1.z.array(videoUpdateSchema).optional(),
+    materials: zod_1.z.array(moduleMaterialUpdateSchema).optional(),
+    quizzes: zod_1.z.array(moduleQuizUpdateSchema).optional(),
+});
+exports.updateCourseContentSchema = zod_1.z.object({
+    params: zod_1.z.object({
+        courseId: common_schema_1.objectIdSchema,
+    }),
+    body: zod_1.z
+        .object({
+        modules: zod_1.z.array(moduleWithContentUpdateSchema).optional(),
+        finalQuizzes: zod_1.z.array(finalQuizUpdateSchema).optional(),
+        finalMaterials: zod_1.z.array(finalMaterialUpdateSchema).optional(),
+    })
+        .refine((data) => {
+        return (data.modules !== undefined ||
+            data.finalQuizzes !== undefined ||
+            data.finalMaterials !== undefined);
+    }, { message: "Update body cannot be empty." }),
 });
 //# sourceMappingURL=course.schema.js.map

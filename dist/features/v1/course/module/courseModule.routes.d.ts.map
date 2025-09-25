@@ -1,1 +1,1 @@
-{"version":3,"file":"courseModule.routes.d.ts","sourceRoot":"","sources":["../../../../../src/features/v1/course/module/courseModule.routes.ts"],"names":[],"mappings":"AAaA,QAAA,MAAM,MAAM,4CAAmB,CAAC;AAShC,eAAe,MAAM,CAAC"}
+{"version":3,"file":"courseModule.routes.d.ts","sourceRoot":"","sources":["../../../../../src/features/v1/course/module/courseModule.routes.ts"],"names":[],"mappings":"AAsBA,QAAA,MAAM,MAAM,4CAAW,CAAC;AAaxB,eAAe,MAAM,CAAC"}

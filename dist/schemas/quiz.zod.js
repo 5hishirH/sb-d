@@ -27,11 +27,11 @@ const quizBaseSchema = zod_1.z.object({
     questions: zod_1.z.array(exports.questionSchema).optional(),
 });
 const moduleQuizSchema = quizBaseSchema.extend({
-    quizType: zod_1.z.literal("ModuleQuiz"),
+    quizType: zod_1.z.literal("ModuleQuiz").default("ModuleQuiz"),
     module: common_schema_1.objectIdSchema,
 });
 const finalQuizSchema = quizBaseSchema.extend({
-    quizType: zod_1.z.literal("FinalQuiz"),
+    quizType: zod_1.z.literal("FinalQuiz").default("FinalQuiz"),
     course: common_schema_1.objectIdSchema,
 });
 exports.singleQuizSchema = zod_1.z.discriminatedUnion("quizType", [
@@ -72,47 +72,12 @@ exports.updateQuizSchema = zod_1.z.object({
     params: zod_1.z.object({
         quizId: common_schema_1.objectIdSchema,
     }),
-    body: zod_1.z
-        .object({
+    body: zod_1.z.object({
         title: zod_1.z.string().optional(),
         timeLimit: zod_1.z.number().optional(),
         order: zod_1.z.number().optional(),
         isAccessedByDefault: zod_1.z.boolean().optional(),
         questions: zod_1.z.array(exports.questionSchema).optional(),
-        module: common_schema_1.objectIdSchema.optional(),
-        course: common_schema_1.objectIdSchema.optional(),
-    })
-        .strict()
-        .superRefine((data, ctx) => {
-        if (Object.keys(data).length === 0) {
-            ctx.addIssue({
-                code: zod_1.z.ZodIssueCode.custom,
-                message: "Update body cannot be empty.",
-            });
-        }
-        if (data.module && data.course) {
-            ctx.addIssue({
-                code: zod_1.z.ZodIssueCode.custom,
-                message: "A quiz cannot have both a 'module' and a 'course' ID.",
-                path: ["module", "course"],
-            });
-        }
-    })
-        .refine(async (data) => {
-        const validations = [];
-        if (data.module) {
-            validations.push(courseModule_model_1.default.exists({ _id: data.module }));
-        }
-        if (data.course) {
-            validations.push(course_model_1.default.exists({ _id: data.course }));
-        }
-        if (validations.length > 0) {
-            const results = await Promise.all(validations);
-            return results.every((result) => result !== null);
-        }
-        return true;
-    }, {
-        message: "The provided module or course ID does not exist.",
     }),
 });
 exports.deleteQuizSchema = zod_1.z.object({

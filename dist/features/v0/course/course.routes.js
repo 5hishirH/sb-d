@@ -10,9 +10,8 @@ const course_controller_1 = require("./course.controller");
 const router = express_1.default.Router();
 router
     .route("/")
-    .post((0, validate_1.validate)(course_schema_1.createCourseWithContentSchema), course_controller_1.createCourseWithContent);
-router
-    .route("/:courseId")
-    .get((0, validate_1.validate)(course_schema_1.getCourseSchema), course_controller_1.getCourseWithContent);
+    .post((0, validate_1.validate)(course_schema_1.createCourseWithContentSchema), course_controller_1.createCourseWithContent)
+    .get((0, validate_1.validate)(course_schema_1.getAllCoursesSchema), course_controller_1.getAllCourses);
+router.route("/:courseId").get((0, validate_1.validate)(course_schema_1.getCourseSchema), course_controller_1.getCourseWithContent);
 exports.default = router;
 //# sourceMappingURL=course.routes.js.map

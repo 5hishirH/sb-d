@@ -7,7 +7,6 @@ export declare const updateQuizWithQuestions: import("express").RequestHandler<{
 }, {}, {
     title?: string | undefined;
     order?: number | undefined;
-    course?: string | undefined;
     timeLimit?: number | undefined;
     isAccessedByDefault?: boolean | undefined;
     questions?: {
@@ -16,7 +15,6 @@ export declare const updateQuizWithQuestions: import("express").RequestHandler<{
         question: string;
         correctAns: string;
     }[] | undefined;
-    module?: string | undefined;
 }, {}, Record<string, any>>;
 export declare const deleteQuestionById: import("express").RequestHandler<{
     quizId: string;

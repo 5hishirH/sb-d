@@ -3,12 +3,12 @@ import { ICourseModule } from "../models/courseModule.model";
 import { ICourse } from "../models/course.model";
 export interface IQuizBase extends Document {
     title: string;
-    timeLimit?: number;
+    timeLimit?: number | null;
     order: number;
     isAccessedByDefault: boolean;
-    questions: IQuestionSubdocument[];
+    questions: IQuestionSubdocument[] | null;
 }
-export interface IQuestionSubdocument {
+export interface IQuestionSubdocument extends Document {
     question: string;
     options: string[];
     correctAns: string;

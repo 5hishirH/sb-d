@@ -57,7 +57,7 @@ declare const moduleQuizSchema: z.ZodObject<{
         correctAns: string;
     }>, "many">>;
 } & {
-    quizType: z.ZodLiteral<"ModuleQuiz">;
+    quizType: z.ZodDefault<z.ZodLiteral<"ModuleQuiz">>;
     module: z.ZodString;
 }, "strip", z.ZodTypeAny, {
     title: string;
@@ -75,7 +75,6 @@ declare const moduleQuizSchema: z.ZodObject<{
 }, {
     title: string;
     order: number;
-    quizType: "ModuleQuiz";
     module: string;
     timeLimit?: number | undefined;
     isAccessedByDefault?: boolean | undefined;
@@ -85,6 +84,7 @@ declare const moduleQuizSchema: z.ZodObject<{
         question: string;
         correctAns: string;
     }[] | undefined;
+    quizType?: "ModuleQuiz" | undefined;
 }>;
 declare const finalQuizSchema: z.ZodObject<{
     title: z.ZodString;
@@ -118,7 +118,7 @@ declare const finalQuizSchema: z.ZodObject<{
         correctAns: string;
     }>, "many">>;
 } & {
-    quizType: z.ZodLiteral<"FinalQuiz">;
+    quizType: z.ZodDefault<z.ZodLiteral<"FinalQuiz">>;
     course: z.ZodString;
 }, "strip", z.ZodTypeAny, {
     title: string;
@@ -137,7 +137,6 @@ declare const finalQuizSchema: z.ZodObject<{
     title: string;
     order: number;
     course: string;
-    quizType: "FinalQuiz";
     timeLimit?: number | undefined;
     isAccessedByDefault?: boolean | undefined;
     questions?: {
@@ -146,6 +145,7 @@ declare const finalQuizSchema: z.ZodObject<{
         question: string;
         correctAns: string;
     }[] | undefined;
+    quizType?: "FinalQuiz" | undefined;
 }>;
 export declare const singleQuizSchema: z.ZodDiscriminatedUnion<"quizType", [z.ZodObject<{
     title: z.ZodString;
@@ -179,7 +179,7 @@ export declare const singleQuizSchema: z.ZodDiscriminatedUnion<"quizType", [z.Zo
         correctAns: string;
     }>, "many">>;
 } & {
-    quizType: z.ZodLiteral<"ModuleQuiz">;
+    quizType: z.ZodDefault<z.ZodLiteral<"ModuleQuiz">>;
     module: z.ZodString;
 }, "strip", z.ZodTypeAny, {
     title: string;
@@ -197,7 +197,6 @@ export declare const singleQuizSchema: z.ZodDiscriminatedUnion<"quizType", [z.Zo
 }, {
     title: string;
     order: number;
-    quizType: "ModuleQuiz";
     module: string;
     timeLimit?: number | undefined;
     isAccessedByDefault?: boolean | undefined;
@@ -207,6 +206,7 @@ export declare const singleQuizSchema: z.ZodDiscriminatedUnion<"quizType", [z.Zo
         question: string;
         correctAns: string;
     }[] | undefined;
+    quizType?: "ModuleQuiz" | undefined;
 }>, z.ZodObject<{
     title: z.ZodString;
     timeLimit: z.ZodOptional<z.ZodNumber>;
@@ -239,7 +239,7 @@ export declare const singleQuizSchema: z.ZodDiscriminatedUnion<"quizType", [z.Zo
         correctAns: string;
     }>, "many">>;
 } & {
-    quizType: z.ZodLiteral<"FinalQuiz">;
+    quizType: z.ZodDefault<z.ZodLiteral<"FinalQuiz">>;
     course: z.ZodString;
 }, "strip", z.ZodTypeAny, {
     title: string;
@@ -258,7 +258,6 @@ export declare const singleQuizSchema: z.ZodDiscriminatedUnion<"quizType", [z.Zo
     title: string;
     order: number;
     course: string;
-    quizType: "FinalQuiz";
     timeLimit?: number | undefined;
     isAccessedByDefault?: boolean | undefined;
     questions?: {
@@ -267,6 +266,7 @@ export declare const singleQuizSchema: z.ZodDiscriminatedUnion<"quizType", [z.Zo
         question: string;
         correctAns: string;
     }[] | undefined;
+    quizType?: "FinalQuiz" | undefined;
 }>]>;
 export declare const createManyQuizzesSchema: z.ZodObject<{
     body: z.ZodEffects<z.ZodArray<z.ZodDiscriminatedUnion<"quizType", [z.ZodObject<{
@@ -301,7 +301,7 @@ export declare const createManyQuizzesSchema: z.ZodObject<{
             correctAns: string;
         }>, "many">>;
     } & {
-        quizType: z.ZodLiteral<"ModuleQuiz">;
+        quizType: z.ZodDefault<z.ZodLiteral<"ModuleQuiz">>;
         module: z.ZodString;
     }, "strip", z.ZodTypeAny, {
         title: string;
@@ -319,7 +319,6 @@ export declare const createManyQuizzesSchema: z.ZodObject<{
     }, {
         title: string;
         order: number;
-        quizType: "ModuleQuiz";
         module: string;
         timeLimit?: number | undefined;
         isAccessedByDefault?: boolean | undefined;
@@ -329,6 +328,7 @@ export declare const createManyQuizzesSchema: z.ZodObject<{
             question: string;
             correctAns: string;
         }[] | undefined;
+        quizType?: "ModuleQuiz" | undefined;
     }>, z.ZodObject<{
         title: z.ZodString;
         timeLimit: z.ZodOptional<z.ZodNumber>;
@@ -361,7 +361,7 @@ export declare const createManyQuizzesSchema: z.ZodObject<{
             correctAns: string;
         }>, "many">>;
     } & {
-        quizType: z.ZodLiteral<"FinalQuiz">;
+        quizType: z.ZodDefault<z.ZodLiteral<"FinalQuiz">>;
         course: z.ZodString;
     }, "strip", z.ZodTypeAny, {
         title: string;
@@ -380,7 +380,6 @@ export declare const createManyQuizzesSchema: z.ZodObject<{
         title: string;
         order: number;
         course: string;
-        quizType: "FinalQuiz";
         timeLimit?: number | undefined;
         isAccessedByDefault?: boolean | undefined;
         questions?: {
@@ -389,6 +388,7 @@ export declare const createManyQuizzesSchema: z.ZodObject<{
             question: string;
             correctAns: string;
         }[] | undefined;
+        quizType?: "FinalQuiz" | undefined;
     }>]>, "atleastone">, [{
         title: string;
         order: number;
@@ -444,7 +444,6 @@ export declare const createManyQuizzesSchema: z.ZodObject<{
     })[]], [{
         title: string;
         order: number;
-        quizType: "ModuleQuiz";
         module: string;
         timeLimit?: number | undefined;
         isAccessedByDefault?: boolean | undefined;
@@ -454,11 +453,11 @@ export declare const createManyQuizzesSchema: z.ZodObject<{
             question: string;
             correctAns: string;
         }[] | undefined;
+        quizType?: "ModuleQuiz" | undefined;
     } | {
         title: string;
         order: number;
         course: string;
-        quizType: "FinalQuiz";
         timeLimit?: number | undefined;
         isAccessedByDefault?: boolean | undefined;
         questions?: {
@@ -467,10 +466,10 @@ export declare const createManyQuizzesSchema: z.ZodObject<{
             question: string;
             correctAns: string;
         }[] | undefined;
+        quizType?: "FinalQuiz" | undefined;
     }, ...({
         title: string;
         order: number;
-        quizType: "ModuleQuiz";
         module: string;
         timeLimit?: number | undefined;
         isAccessedByDefault?: boolean | undefined;
@@ -480,11 +479,11 @@ export declare const createManyQuizzesSchema: z.ZodObject<{
             question: string;
             correctAns: string;
         }[] | undefined;
+        quizType?: "ModuleQuiz" | undefined;
     } | {
         title: string;
         order: number;
         course: string;
-        quizType: "FinalQuiz";
         timeLimit?: number | undefined;
         isAccessedByDefault?: boolean | undefined;
         questions?: {
@@ -493,6 +492,7 @@ export declare const createManyQuizzesSchema: z.ZodObject<{
             question: string;
             correctAns: string;
         }[] | undefined;
+        quizType?: "FinalQuiz" | undefined;
     })[]]>;
 }, "strip", z.ZodTypeAny, {
     body: [{
@@ -552,7 +552,6 @@ export declare const createManyQuizzesSchema: z.ZodObject<{
     body: [{
         title: string;
         order: number;
-        quizType: "ModuleQuiz";
         module: string;
         timeLimit?: number | undefined;
         isAccessedByDefault?: boolean | undefined;
@@ -562,11 +561,11 @@ export declare const createManyQuizzesSchema: z.ZodObject<{
             question: string;
             correctAns: string;
         }[] | undefined;
+        quizType?: "ModuleQuiz" | undefined;
     } | {
         title: string;
         order: number;
         course: string;
-        quizType: "FinalQuiz";
         timeLimit?: number | undefined;
         isAccessedByDefault?: boolean | undefined;
         questions?: {
@@ -575,10 +574,10 @@ export declare const createManyQuizzesSchema: z.ZodObject<{
             question: string;
             correctAns: string;
         }[] | undefined;
+        quizType?: "FinalQuiz" | undefined;
     }, ...({
         title: string;
         order: number;
-        quizType: "ModuleQuiz";
         module: string;
         timeLimit?: number | undefined;
         isAccessedByDefault?: boolean | undefined;
@@ -588,11 +587,11 @@ export declare const createManyQuizzesSchema: z.ZodObject<{
             question: string;
             correctAns: string;
         }[] | undefined;
+        quizType?: "ModuleQuiz" | undefined;
     } | {
         title: string;
         order: number;
         course: string;
-        quizType: "FinalQuiz";
         timeLimit?: number | undefined;
         isAccessedByDefault?: boolean | undefined;
         questions?: {
@@ -601,6 +600,7 @@ export declare const createManyQuizzesSchema: z.ZodObject<{
             question: string;
             correctAns: string;
         }[] | undefined;
+        quizType?: "FinalQuiz" | undefined;
     })[]];
 }>;
 export declare const getQuizSchema: z.ZodObject<{
@@ -628,7 +628,7 @@ export declare const updateQuizSchema: z.ZodObject<{
     }, {
         quizId: string;
     }>;
-    body: z.ZodEffects<z.ZodEffects<z.ZodObject<{
+    body: z.ZodObject<{
         title: z.ZodOptional<z.ZodString>;
         timeLimit: z.ZodOptional<z.ZodNumber>;
         order: z.ZodOptional<z.ZodNumber>;
@@ -659,12 +659,9 @@ export declare const updateQuizSchema: z.ZodObject<{
             question: string;
             correctAns: string;
         }>, "many">>;
-        module: z.ZodOptional<z.ZodString>;
-        course: z.ZodOptional<z.ZodString>;
-    }, "strict", z.ZodTypeAny, {
+    }, "strip", z.ZodTypeAny, {
         title?: string | undefined;
         order?: number | undefined;
-        course?: string | undefined;
         timeLimit?: number | undefined;
         isAccessedByDefault?: boolean | undefined;
         questions?: {
@@ -673,11 +670,9 @@ export declare const updateQuizSchema: z.ZodObject<{
             question: string;
             correctAns: string;
         }[] | undefined;
-        module?: string | undefined;
     }, {
         title?: string | undefined;
         order?: number | undefined;
-        course?: string | undefined;
         timeLimit?: number | undefined;
         isAccessedByDefault?: boolean | undefined;
         questions?: {
@@ -686,59 +681,6 @@ export declare const updateQuizSchema: z.ZodObject<{
             question: string;
             correctAns: string;
         }[] | undefined;
-        module?: string | undefined;
-    }>, {
-        title?: string | undefined;
-        order?: number | undefined;
-        course?: string | undefined;
-        timeLimit?: number | undefined;
-        isAccessedByDefault?: boolean | undefined;
-        questions?: {
-            options: string[];
-            order: number;
-            question: string;
-            correctAns: string;
-        }[] | undefined;
-        module?: string | undefined;
-    }, {
-        title?: string | undefined;
-        order?: number | undefined;
-        course?: string | undefined;
-        timeLimit?: number | undefined;
-        isAccessedByDefault?: boolean | undefined;
-        questions?: {
-            options: string[];
-            order: number;
-            question: string;
-            correctAns: string;
-        }[] | undefined;
-        module?: string | undefined;
-    }>, {
-        title?: string | undefined;
-        order?: number | undefined;
-        course?: string | undefined;
-        timeLimit?: number | undefined;
-        isAccessedByDefault?: boolean | undefined;
-        questions?: {
-            options: string[];
-            order: number;
-            question: string;
-            correctAns: string;
-        }[] | undefined;
-        module?: string | undefined;
-    }, {
-        title?: string | undefined;
-        order?: number | undefined;
-        course?: string | undefined;
-        timeLimit?: number | undefined;
-        isAccessedByDefault?: boolean | undefined;
-        questions?: {
-            options: string[];
-            order: number;
-            question: string;
-            correctAns: string;
-        }[] | undefined;
-        module?: string | undefined;
     }>;
 }, "strip", z.ZodTypeAny, {
     params: {
@@ -747,7 +689,6 @@ export declare const updateQuizSchema: z.ZodObject<{
     body: {
         title?: string | undefined;
         order?: number | undefined;
-        course?: string | undefined;
         timeLimit?: number | undefined;
         isAccessedByDefault?: boolean | undefined;
         questions?: {
@@ -756,7 +697,6 @@ export declare const updateQuizSchema: z.ZodObject<{
             question: string;
             correctAns: string;
         }[] | undefined;
-        module?: string | undefined;
     };
 }, {
     params: {
@@ -765,7 +705,6 @@ export declare const updateQuizSchema: z.ZodObject<{
     body: {
         title?: string | undefined;
         order?: number | undefined;
-        course?: string | undefined;
         timeLimit?: number | undefined;
         isAccessedByDefault?: boolean | undefined;
         questions?: {
@@ -774,7 +713,6 @@ export declare const updateQuizSchema: z.ZodObject<{
             question: string;
             correctAns: string;
         }[] | undefined;
-        module?: string | undefined;
     };
 }>;
 export declare const deleteQuizSchema: z.ZodObject<{

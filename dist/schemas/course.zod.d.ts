@@ -2126,6 +2126,24 @@ export declare const updateCourseSchema: z.ZodObject<{
         category?: [string, ...string[]] | undefined;
     };
 }>;
+export declare const courseIdSchema: z.ZodObject<{
+    params: z.ZodObject<{
+        courseId: z.ZodString;
+    }, "strip", z.ZodTypeAny, {
+        courseId: string;
+    }, {
+        courseId: string;
+    }>;
+}, "strip", z.ZodTypeAny, {
+    params: {
+        courseId: string;
+    };
+}, {
+    params: {
+        courseId: string;
+    };
+}>;
+export type CourseIdParam = z.infer<typeof courseIdSchema>["params"];
 export type CreateCourseRequest = z.infer<typeof createCourseWithContentSchema>["body"];
 export type CreateManyCoursesRequest = z.infer<typeof createManyCoursesWithContentSchema>["body"];
 export type TVideoSubdocument = z.infer<typeof videoSchema>;

@@ -2,8 +2,8 @@ import { Document, Model } from "mongoose";
 import { ICourseModule } from "../models/courseModule.model";
 export interface ICourseVideo extends Document {
     title?: string;
-    description?: string;
-    url: string;
+    description?: string | null;
+    url: string | null;
     order: number;
     isAccessedByDefault: boolean;
     module: ICourseModule["_id"];

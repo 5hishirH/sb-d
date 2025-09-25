@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteCourseAndContents = exports.updateCourseById = exports.activateCourse = exports.getFirstCourseVideo = exports.getCourseContentCount = exports.getCourseWithContent = exports.getAllCourses = exports.createManyCoursesWithContent = exports.createCourseWithContent = void 0;
+exports.deleteCourseAndContents = exports.updateCourseById = exports.activateCourse = exports.getFirstCourseVideo = exports.getCourseContentCount = exports.getPublicCourseDetails = exports.getUserCourseDetails = exports.getCourseWithContent = exports.getAllCourses = exports.createManyCoursesWithContent = exports.createCourseWithContent = void 0;
 const asyncHandler_1 = require("../../../utils/asyncHandler");
 const AppError_1 = require("../../../utils/AppError");
 const mongoose_1 = __importDefault(require("mongoose"));
@@ -13,6 +13,9 @@ const courseVideo_model_1 = __importDefault(require("../../../models/courseVideo
 const material_model_1 = __importDefault(require("../../../models/material.model"));
 const assignment_model_1 = __importDefault(require("../../../models/assignment.model"));
 const quiz_model_1 = __importDefault(require("../../../models/quiz.model"));
+const ApiResponse_1 = require("../../../utils/ApiResponse");
+const courseProgress_service_1 = require("../courseProgress/courseProgress.service");
+const course_service_1 = require("./course.service");
 const createCourseLevelContent = async ({ courseId, finalQuizzes, assignments, session, }) => {
     const contentCreationPromises = [];
     if (finalQuizzes && finalQuizzes.length > 0) {
@@ -193,75 +196,89 @@ exports.getAllCourses = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
 });
 exports.getCourseWithContent = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
     const { courseId } = req.params;
-    const courses = await course_model_1.default.aggregate([
+    const course = await (0, course_service_1.getCourseWithContentById)(courseId);
+    res
+        .status(200)
+        .json(new ApiResponse_1.ApiResponse(200, "Course along with its contents retrieved successfully", course, 1));
+});
+exports.getUserCourseDetails = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
+    const { _id: userId } = req.user;
+    const course = await (0, courseProgress_service_1.getCourseProgress)(userId.toString(), req.params.courseId);
+    res
+        .status(200)
+        .json(new ApiResponse_1.ApiResponse(200, "Course details retrived successfully", course, 1));
+});
+exports.getPublicCourseDetails = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
+    const { courseId } = req.params;
+    const aggregationResult = await course_model_1.default.aggregate([
         { $match: { _id: new mongoose_1.default.Types.ObjectId(courseId) } },
         {
             $lookup: {
                 from: "coursemodules",
                 localField: "_id",
                 foreignField: "course",
+                pipeline: [
+                    { $sort: { order: 1 } },
+                    {
+                        $lookup: {
+                            from: "coursevideos",
+                            localField: "_id",
+                            foreignField: "module",
+                            pipeline: [
+                                { $sort: { order: 1 } },
+                                { $project: { _id: 1, title: 1, order: 1 } },
+                            ],
+                            as: "videos",
+                        },
+                    },
+                    {
+                        $project: {
+                            _id: 1,
+                            title: 1,
+                            order: 1,
+                            videos: 1,
+                        },
+                    },
+                ],
                 as: "modules",
-            },
-        },
-        { $unwind: { path: "$modules", preserveNullAndEmptyArrays: true } },
-        { $sort: { "modules.order": 1 } },
-        {
-            $lookup: {
-                from: "coursevideos",
-                localField: "modules._id",
-                foreignField: "module",
-                as: "modules.videos",
             },
         },
         {
             $lookup: {
                 from: "materials",
-                localField: "modules._id",
-                foreignField: "module",
-                as: "modules.materials",
-            },
-        },
-        {
-            $lookup: {
-                from: "quizzes",
-                localField: "modules._id",
-                foreignField: "module",
-                as: "modules.quizzes",
-            },
-        },
-        {
-            $group: {
-                _id: "$_id",
-                title: { $first: "$title" },
-                description: { $first: "$description" },
-                price: { $first: "$price" },
-                instructor: { $first: "$instructor" },
-                category: { $first: "$category" },
-                modules: { $push: "$modules" },
-            },
-        },
-        {
-            $lookup: {
-                from: "quizzes",
-                let: { courseId: "$_id" },
+                let: { courseId: "$_id", moduleIds: "$modules._id" },
                 pipeline: [
                     {
                         $match: {
-                            $expr: { $eq: ["$course", "$$courseId"] },
-                            quizType: "FinalQuiz",
+                            $expr: {
+                                $or: [
+                                    { $eq: ["$course", "$$courseId"] },
+                                    { $in: ["$module", "$$moduleIds"] },
+                                ],
+                            },
                         },
                     },
-                    { $sort: { order: 1 } },
                 ],
-                as: "finalQuizzes",
+                as: "materials",
             },
         },
         {
             $lookup: {
-                from: "assignments",
-                localField: "_id",
-                foreignField: "course",
-                as: "assignments",
+                from: "quizzes",
+                let: { courseId: "$_id", moduleIds: "$modules._id" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $or: [
+                                    { $eq: ["$course", "$$courseId"] },
+                                    { $in: ["$module", "$$moduleIds"] },
+                                ],
+                            },
+                        },
+                    },
+                ],
+                as: "quizzes",
             },
         },
         {
@@ -269,7 +286,7 @@ exports.getCourseWithContent = (0, asyncHandler_1.asyncHandler)(async (req, res)
                 from: "instructors",
                 localField: "instructor",
                 foreignField: "_id",
-                as: "instructors",
+                as: "instructorDetails",
             },
         },
         {
@@ -277,7 +294,7 @@ exports.getCourseWithContent = (0, asyncHandler_1.asyncHandler)(async (req, res)
                 from: "coursecategories",
                 localField: "category",
                 foreignField: "_id",
-                as: "categories",
+                as: "categoryDetails",
             },
         },
         {
@@ -286,29 +303,39 @@ exports.getCourseWithContent = (0, asyncHandler_1.asyncHandler)(async (req, res)
                 title: 1,
                 description: 1,
                 price: 1,
-                instructors: 1,
-                categories: 1,
-                modules: {
-                    _id: 1,
-                    title: 1,
-                    order: 1,
-                    videos: 1,
-                    materials: 1,
-                    quizzes: 1,
+                discountPercentage: 1,
+                thumbnailUrl: 1,
+                videoThumbnailUrl: 1,
+                enrollmentCount: 1,
+                duration: 1,
+                rating: 1,
+                category: { $ifNull: [{ $first: "$categoryDetails" }, null] },
+                instructors: "$instructorDetails",
+                contentCount: {
+                    videos: {
+                        $sum: {
+                            $map: {
+                                input: "$modules",
+                                as: "module",
+                                in: { $size: "$$module.videos" },
+                            },
+                        },
+                    },
+                    materials: { $size: "$materials" },
+                    quizzes: { $size: "$quizzes" },
+                    modules: { $size: "$modules" },
                 },
-                finalQuizzes: 1,
-                assignments: 1,
+                modules: "$modules",
             },
         },
     ]);
-    if (!courses || courses.length === 0) {
-        throw AppError_1.AppError.notFound("Course not found");
+    if (!aggregationResult || aggregationResult.length === 0) {
+        throw AppError_1.AppError.notFound("Course not found.");
     }
-    const course = courses[0];
-    res.status(200).json({
-        success: true,
-        data: course,
-    });
+    const courseDetails = aggregationResult[0];
+    res
+        .status(200)
+        .json(new ApiResponse_1.ApiResponse(200, `Public details for course ${courseId} retrieved successfully`, courseDetails));
 });
 exports.getCourseContentCount = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
     const { courseId } = req.params;
@@ -410,10 +437,14 @@ exports.updateCourseById = (0, asyncHandler_1.asyncHandler)(async (req, res) => 
     if (!updatedCourse) {
         throw AppError_1.AppError.notFound(`Course not found with id of ${courseId}`);
     }
+    const resData = {
+        ...updatedCourse.toJSON(),
+        category: updatedCourse["category"][0]?.toString(),
+    };
     res.status(200).json({
         success: true,
         message: "Course updated successfully",
-        data: updatedCourse,
+        data: resData,
     });
 });
 exports.deleteCourseAndContents = (0, asyncHandler_1.asyncHandler)(async (req, res) => {

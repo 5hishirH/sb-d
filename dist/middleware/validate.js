@@ -11,11 +11,14 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const validate = (schema) => {
     return (0, asyncHandler_1.asyncHandler)(async (req, _, next) => {
         try {
-            await schema.parseAsync({
+            const parsed = await schema.parseAsync({
                 body: req.body,
                 query: req.query,
                 params: req.params,
             });
+            req.body = parsed.body;
+            req.query = parsed.query;
+            req.params = parsed.params;
             next();
         }
         catch (error) {

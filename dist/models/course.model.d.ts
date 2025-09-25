@@ -7,8 +7,9 @@ export interface ICourse extends Document {
     thumbnailUrl?: string;
     videoThumbnailUrl?: string;
     price: number;
+    discountPercentage: number;
     duration: number;
-    rating: number;
+    rating: number | null;
     enrollmentCount: number;
     isActive: boolean;
     instructor: IInstructor["_id"][];

@@ -1,1 +1,1 @@
-{"version":3,"file":"testimonial.model.d.ts","sourceRoot":"","sources":["../../src/models/testimonial.model.ts"],"names":[],"mappings":""}
+{"version":3,"file":"testimonial.model.d.ts","sourceRoot":"","sources":["../../src/models/testimonial.model.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,QAAQ,EAAS,KAAK,EAAU,MAAM,UAAU,CAAC;AAE1D,MAAM,WAAW,YAAa,SAAQ,QAAQ;IAC5C,IAAI,EAAE,MAAM,CAAC;IACb,WAAW,EAAE,MAAM,CAAC;IACpB,SAAS,EAAE,MAAM,CAAC;IAClB,KAAK,EAAE,MAAM,CAAC;IACd,SAAS,EAAE,OAAO,CAAC;CACpB;AAgCD,QAAA,MAAM,WAAW,EAAE,KAAK,CAAC,YAAY,CAGpC,CAAC;AAEF,eAAe,WAAW,CAAC"}

@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const auth_routes_1 = __importDefault(require("../../features/v1/auth/auth.routes"));
-const user_routes_1 = __importDefault(require("../../features/v1/user/user.routes"));
 const course_routes_1 = __importDefault(require("../../features/v1/course/course.routes"));
 const instructor_routes_1 = __importDefault(require("../../features/v1/instructor/instructor.routes"));
 const courseCategory_routes_1 = __importDefault(require("../../features/v1/courseCategory/courseCategory.routes"));
@@ -17,9 +16,13 @@ const writer_routes_1 = __importDefault(require("../../features/v1/writer/writer
 const ebookCategory_routes_1 = __importDefault(require("../../features/v1/ebookCategory/ebookCategory.routes"));
 const ebook_routes_1 = __importDefault(require("../../features/v1/ebook/ebook.routes"));
 const contactSubmission_routes_1 = __importDefault(require("../../features/v1/contactSubmission/contactSubmission.routes"));
+const coupon_routes_1 = require("./coupon/coupon.routes");
+const testimonial_routes_1 = __importDefault(require("./testimonial/testimonial.routes"));
+const invoice_routes_1 = __importDefault(require("./invoice/invoice.routes"));
+const user_routes_1 = __importDefault(require("../../features/v1/course/routes/user.routes"));
+const admin_routes_1 = __importDefault(require("../../features/v1/common/routes/admin.routes"));
 const router = (0, express_1.Router)();
 router.use("/api/auth", auth_routes_1.default);
-router.use("/api/users", user_routes_1.default);
 router.use("/api/instructors", instructor_routes_1.default);
 router.use("/api/course-categories", courseCategory_routes_1.default);
 router.use("/api/courses", course_routes_1.default);
@@ -31,5 +34,10 @@ router.use("/api/writers", writer_routes_1.default);
 router.use("/api/ebook-categories", ebookCategory_routes_1.default);
 router.use("/api/ebooks", ebook_routes_1.default);
 router.use("/api/contacts", contactSubmission_routes_1.default);
+router.use("/api/coupons", coupon_routes_1.couponRoutes);
+router.use("/api/purchases", invoice_routes_1.default);
+router.use("/api/user/courses", user_routes_1.default);
+router.use("/api/testimonials", testimonial_routes_1.default);
+router.use("/api/admin", admin_routes_1.default);
 exports.default = router;
 //# sourceMappingURL=index.js.map

@@ -1,6 +1,6 @@
-import mongoose, { Document, ObjectId, Schema } from "mongoose";
+import mongoose, { Document, Types } from "mongoose";
 export interface IUser extends Document {
-    _id: ObjectId;
+    _id: Types.ObjectId;
     name: string;
     email: string;
     password: string;
@@ -27,7 +27,7 @@ export interface IUser extends Document {
     generatePasswordResetToken(): string;
 }
 export declare const User: mongoose.Model<IUser, {}, {}, {}, mongoose.Document<unknown, {}, IUser, {}> & IUser & Required<{
-    _id: Schema.Types.ObjectId;
+    _id: Types.ObjectId;
 }> & {
     __v: number;
 }, any>;

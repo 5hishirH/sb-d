@@ -1,6 +1,7 @@
 export declare const createCourseWithContent: import("express").RequestHandler<{}, {}, {
     title: string;
     price: number;
+    discountPercentage: number;
     duration: number;
     instructor: [string, ...string[]];
     category: [string, ...string[]];
@@ -63,6 +64,20 @@ export declare const createCourseWithContent: import("express").RequestHandler<{
     }[] | undefined;
 }, {}, Record<string, any>>;
 export declare const getCourseWithContent: import("express").RequestHandler<{
+    courseId: string;
+}, {}, {}, {}, Record<string, any>>;
+export declare const getCourseContentCount: import("express").RequestHandler<{
+    courseId: string;
+}, {}, {}, {}, Record<string, any>>;
+export declare const getAllCourses: import("express").RequestHandler<{}, {}, {}, {
+    limit: string;
+    page: string;
+    search?: string | undefined;
+    sortBy?: string | undefined;
+    instructor?: string | undefined;
+    category?: string | undefined;
+}, Record<string, any>>;
+export declare const deleteCourseWithContents: import("express").RequestHandler<{
     courseId: string;
 }, {}, {}, {}, Record<string, any>>;
 //# sourceMappingURL=course.controller.d.ts.map

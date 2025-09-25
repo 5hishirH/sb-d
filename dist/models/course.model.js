@@ -7,8 +7,9 @@ const courseSchema = new mongoose_1.Schema({
     thumbnailUrl: { type: String },
     videoThumbnailUrl: { type: String },
     price: { type: Number, min: 0, default: 0 },
+    discountPercentage: { type: Number, default: 0 },
     duration: { type: Number, required: true },
-    rating: { type: Number, min: 0, max: 5 },
+    rating: { type: Number, min: 0, max: 5, default: 0 },
     enrollmentCount: { type: Number, min: 0, default: 0 },
     isActive: { type: Boolean, default: false },
     instructor: [
